@@ -6,3 +6,5 @@ export const SECRET_JWT_KEY = process.env.SECRET_JWT_KEY;
 export const EMAIL_USER = process.env.EMAIL_USER;
 export const EMAIL_PASS = process.env.EMAIL_PASS;
 export const MONGODB_URI = process.env.MONGODB_URI;
+export const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 10;
+
