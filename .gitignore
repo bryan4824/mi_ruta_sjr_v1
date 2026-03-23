@@ -20,4 +20,4 @@ uploads/
 
 # Build
 dist/
-build/
+build/config.js
