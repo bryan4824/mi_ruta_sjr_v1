@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Vendedores · Mi Ruta SJR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sandstone: #F4CC70;
+      --burnt: #DE7A22;
+      --sea: #20948B;
+      --sea-claro: #E6F5F4;
+      --lagoon: #6AB187;
+      --fondo: #F8F9FF;
+      --blanco: #ffffff;
+      --texto: #1E2A1E;
+      --suave: #7A8C8A;
+      --borde: #E4EDE8;
+    }
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+    .left { display: flex; align-items: center; justify-content: center; padding: 48px; background: var(--blanco); border-right: 1.5px solid var(--borde); position: relative; overflow: hidden; }
+    .left-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; animation: flotar linear infinite; }
+    .orb-1 { width: 300px; height: 300px; background: #E6F5F4; opacity: 0.6; top: -80px; left: -80px; animation-duration: 20s; }
+    .orb-2 { width: 200px; height: 200px; background: #FEF8E7; opacity: 0.5; bottom: -50px; right: -50px; animation-duration: 24s; animation-delay: -8s; }
+    @keyframes flotar { 0% { transform: translate(0,0) scale(1); } 25% { transform: translate(20px,-16px) scale(1.03); } 50% { transform: translate(-14px,20px) scale(0.97); } 75% { transform: translate(16px,14px) scale(1.02); } 100% { transform: translate(0,0) scale(1); } }
+    .login-wrap { width: 100%; max-width: 400px; position: relative; z-index: 1; animation: slideUp 0.5s ease both; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+    .login-logo img { height: 32px; }
+    .login-badge { background: var(--sea-claro); color: var(--sea); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.04em; }
+    .login-title { font-size: 28px; font-weight: 800; color: var(--texto); margin-bottom: 6px; line-height: 1.1; }
+    .login-sub { font-size: 14px; color: var(--suave); margin-bottom: 32px; }
+    .alert { background: #FEF2F2; border: 1.5px solid #FCA5A5; color: #B91C1C; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; margin-bottom: 20px; display: none; align-items: center; gap: 8px; }
+    .alert.visible { display: flex; }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--suave); margin-bottom: 7px; }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap input { width: 100%; background: var(--fondo); border: 1.5px solid var(--borde); border-radius: 10px; padding: 11px 14px 11px 40px; font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--texto); outline: none; transition: border-color 0.18s; }
+    .input-wrap input:focus { border-color: var(--sea); background: var(--blanco); }
+    .input-wrap input::placeholder { color: var(--suave); }
+    .input-icon { position: absolute; left: 13px; width: 16px; height: 16px; stroke: var(--suave); fill: none; stroke-width: 2; pointer-events: none; }
+    .toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
+    .toggle-pass svg { width: 16px; height: 16px; stroke: var(--suave); fill: none; stroke-width: 2; }
+    .divider { height: 1.5px; background: var(--borde); margin: 24px 0; }
+    .btn-submit { width: 100%; background: var(--sea); color: #fff; border: none; border-radius: 10px; padding: 13px; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: filter 0.18s, transform 0.15s; }
+    .btn-submit:hover { filter: brightness(0.9); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-submit svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2.5; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text, .btn-submit.loading .btn-icon { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .back-link { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; font-size: 13px; color: var(--suave); text-decoration: none; transition: color 0.18s; }
+    .back-link:hover { color: var(--sea); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+    .right { background: var(--sea); display: flex; flex-direction: column; justify-content: center; padding: 64px 56px; position: relative; overflow: hidden; }
+    .right-ring { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.12); }
+    .ring-1 { width: 400px; height: 400px; top: -120px; right: -100px; }
+    .ring-2 { width: 240px; height: 240px; top: 40px; right: 20px; }
+    .ring-3 { width: 160px; height: 160px; bottom: 60px; left: -40px; }
+    .right-content { position: relative; z-index: 1; }
+    .right-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+    .right-title { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 12px; }
+    .right-title em { color: var(--sandstone); font-style: normal; }
+    .right-sub { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 40px; max-width: 340px; }
+    .feature-list { display: flex; flex-direction: column; gap: 14px; }
+    .feature-item { display: flex; align-items: center; gap: 12px; animation: slideUp 0.5s ease both; }
+    .feature-item:nth-child(1) { animation-delay: 0.1s; }
+    .feature-item:nth-child(2) { animation-delay: 0.2s; }
+    .feature-item:nth-child(3) { animation-delay: 0.3s; }
+    .feature-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .feature-icon svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+    .feature-text strong { display: block; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .feature-text span { font-size: 12px; color: rgba(255,255,255,0.6); }
+    @media (max-width: 768px) { body { grid-template-columns: 1fr; } .right { display: none; } .left { min-height: 100vh; } }
+  </style>
+</head>
+<body>
+
+  <div class="left">
+    <div class="left-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+    <div class="login-wrap">
+      <div class="login-logo">
+        <img src="/image/logo_sin_fondo.png" alt="Mi Ruta SJR">
+        <span class="login-badge">Vendedores</span>
+      </div>
+      <h1 class="login-title">Accede a tu<br>panel de ventas</h1>
+      <p class="login-sub">Gestiona tus productos y perfil desde un solo lugar.</p>
+      <div class="alert" id="alertBox">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="alertMsg">Usuario o contraseña incorrectos.</span>
+      </div>
+      <form id="loginForm" novalidate>
+        <div class="field" id="fieldUser">
+          <label>Usuario</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" id="username" placeholder="Tu nombre de usuario" autocomplete="username" required>
+          </div>
+        </div>
+        <div class="field" id="fieldPass">
+          <label>Contraseña</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="password" placeholder="Tu contraseña" autocomplete="current-password" required>
+            <button type="button" class="toggle-pass" id="togglePass">
+              <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <div class="spinner"></div>
+          <span class="btn-text">Ingresar al panel</span>
+          <svg class="btn-icon" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </button>
+      </form>
+      <a class="back-link" href="/"><svg viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Volver a la app</a>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="right-ring ring-1"></div>
+    <div class="right-ring ring-2"></div>
+    <div class="right-ring ring-3"></div>
+    <div class="right-content">
+      <div class="right-tag">Portal exclusivo</div>
+      <h2 class="right-title">Tu negocio,<br><em>tu panel</em></h2>
+      <p class="right-sub">Administra tus productos, actualiza tu perfil y mantén tu inventario al día desde un solo lugar.</p>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+          <div class="feature-text"><strong>Gestión de productos</strong><span>Agrega, edita y elimina productos fácilmente</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="feature-text"><strong>Perfil del local</strong><span>Actualiza los datos de tu negocio</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="feature-text"><strong>Control de inventario</strong><span>Monitorea stock mínimo y máximo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    const eyeOff  = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+
+    document.getElementById('togglePass').addEventListener('click', () => {
+      const pass = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      const isPass = pass.type === 'password';
+      pass.type = isPass ? 'text' : 'password';
+      icon.innerHTML = isPass ? eyeOff : eyeOpen;
+    });
+
+    function showAlert(msg) { document.getElementById('alertMsg').textContent = msg; document.getElementById('alertBox').classList.add('visible'); }
+    function setLoading(val) { const btn = document.getElementById('submitBtn'); btn.disabled = val; btn.classList.toggle('loading', val); }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('alertBox').classList.remove('visible');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (!username || !password) { showAlert('Completa todos los campos.'); return; }
+      setLoading(true);
+      try {
+        const res = await fetch('/login-vendedor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.redirect) { window.location.href = data.redirect; }
+        else { showAlert(data.message || 'Usuario o contraseña incorrectos.'); }
+      } catch { showAlert('Error de conexión. Intenta de nuevo.'); }
+      finally { setLoading(false); }
+    });
+  </script>
+</body>
+</html>

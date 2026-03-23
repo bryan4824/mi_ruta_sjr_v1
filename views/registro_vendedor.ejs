@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiero vender · Mi Ruta SJR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
+      --burnt: #DE7A22; --burnt-claro: #FEF0E3; --burnt-borde: #F5C99A;
+      --lagoon: #6AB187; --lagoon-claro: #EDF6F0; --lagoon-borde: #B5DAC3;
+      --sand: #F4CC70; --sand-claro: #FEF8E7; --sand-borde: #F0E0A0;
+      --rojo: #E57373; --rojo-claro: #FEF2F2; --rojo-borde: #FCA5A5;
+      --fondo: #F5F4F0; --blanco: #ffffff; --texto: #111; --suave: #888; --borde: #E4E4DC;
+    }
+
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: var(--blanco) !important; border-bottom: 1px solid var(--borde); box-shadow: none !important; }
+    .navbar-brand img { height: 38px; }
+    .nav-link { font-size: 13px; color: #555 !important; font-weight: 500; }
+    .nav-link:hover { color: var(--texto) !important; }
+
+    /* HERO */
+    .hero { background: var(--sea); padding: 56px 28px 52px; position: relative; overflow: hidden; }
+    .hero-ring { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.12); }
+    .ring-1 { width: 380px; height: 380px; top: -120px; right: -80px; }
+    .ring-2 { width: 220px; height: 220px; top: 20px; right: 80px; }
+    .ring-3 { width: 140px; height: 140px; bottom: -40px; left: 32%; }
+    .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px; position: relative; z-index: 1; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 46px); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 10px; }
+    .hero h1 em { color: var(--sand); font-style: normal; }
+    .hero p { font-size: 14px; color: rgba(255,255,255,0.72); line-height: 1.7; max-width: 440px; }
+    .hero-stats { display: flex; gap: 12px; }
+    .hero-stat { background: rgba(255,255,255,0.16); border-radius: 12px; padding: 14px 20px; text-align: center; min-width: 100px; }
+    .hero-stat strong { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; display: block; }
+    .hero-stat span { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 600; }
+
+    /* LAYOUT */
+    .layout { max-width: 1100px; margin: 0 auto; padding: 32px 20px 72px; display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: start; }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 80px; }
+    .sidebar-card { background: var(--blanco); border: 1px solid var(--borde); padding: 24px; margin-bottom: 16px; }
+    .sidebar-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .sidebar-title svg { width: 14px; height: 14px; stroke: var(--sea); fill: none; }
+
+    .steps { display: flex; flex-direction: column; gap: 4px; }
+    .step { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid transparent; cursor: pointer; transition: all 0.15s; }
+    .step.active { border-color: var(--sea); background: var(--sea-claro); }
+    .step.done { border-color: var(--lagoon-borde); background: var(--lagoon-claro); }
+    .step-num { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; border: 1.5px solid var(--borde); background: var(--fondo); color: var(--suave); }
+    .step.active .step-num { border-color: var(--sea); background: var(--sea); color: #fff; }
+    .step.done .step-num { border-color: var(--lagoon); background: var(--lagoon); color: #fff; }
+    .step-info strong { display: block; font-size: 13px; font-weight: 700; color: var(--texto); margin-bottom: 1px; }
+    .step-info span { font-size: 11px; color: var(--suave); }
+
+    .info-box { background: var(--sand-claro); border: 1px solid var(--sand-borde); padding: 16px; }
+    .info-box strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #7A5800; }
+    .info-box p { font-size: 12px; color: #7A5800; line-height: 1.6; }
+
+    /* FORM CARD */
+    .form-card { background: var(--blanco); border: 1px solid var(--borde); overflow: hidden; }
+    .form-card-header { background: var(--fondo); border-bottom: 1px solid var(--borde); padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .form-card-header h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+    .form-card-header p { font-size: 12px; color: var(--suave); margin-top: 2px; }
+    .form-body { padding: 28px; }
+
+    /* PROGRESO */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--suave); margin-bottom: 6px; }
+    .progress-track { height: 4px; background: var(--borde); }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--sea), var(--lagoon)); width: 0%; transition: width 0.4s ease; }
+
+    /* SECCIONES */
+    .form-section { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--borde); }
+    .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--suave); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--borde); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--texto); }
+    .field label span { color: var(--rojo); }
+    .field input, .field select, .field textarea {
+      background: var(--fondo); border: 1.5px solid var(--borde);
+      padding: 10px 13px; font-family: 'Outfit', sans-serif;
+      font-size: 14px; color: var(--texto); outline: none;
+      transition: border-color 0.18s, background 0.18s; width: 100%;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--sea); background: var(--blanco); }
+    .field input::placeholder, .field textarea::placeholder { color: var(--suave); }
+    .field textarea { resize: vertical; min-height: 88px; }
+    .field .err { font-size: 11px; color: var(--rojo); display: none; margin-top: 2px; }
+    .field.error .err { display: block; }
+    .field.error input, .field.error select, .field.error textarea { border-color: var(--rojo); background: var(--rojo-claro); }
+
+    /* FILE DROP */
+    .file-drop { border: 2px dashed var(--borde); padding: 28px; text-align: center; cursor: pointer; position: relative; transition: all 0.18s; background: var(--fondo); }
+    .file-drop:hover, .file-drop.over { border-color: var(--sea); background: var(--sea-claro); }
+    .file-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .file-drop-icon { font-size: 28px; margin-bottom: 8px; }
+    .file-drop-text { font-size: 13px; color: var(--suave); }
+    .file-drop-text strong { color: var(--sea); }
+    .file-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .file-item { display: flex; align-items: center; gap: 8px; background: var(--lagoon-claro); border: 1px solid var(--lagoon-borde); padding: 6px 10px; font-size: 12px; }
+    .file-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #2D6644; }
+    .file-remove { background: none; border: none; cursor: pointer; color: var(--rojo); font-size: 14px; line-height: 1; }
+
+    /* CHECKBOXES */
+    .check-group { display: flex; flex-direction: column; gap: 10px; }
+    .check-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .check-item input { display: none; }
+    .check-box { width: 20px; height: 20px; border: 2px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: 11px; color: transparent; flex-shrink: 0; margin-top: 1px; transition: all 0.15s; }
+    .check-item input:checked + .check-box { background: var(--sea); border-color: var(--sea); color: #fff; }
+    .check-label { font-size: 13px; color: var(--texto); line-height: 1.5; }
+    .check-label a { color: var(--sea); font-weight: 600; }
+
+    /* FOOTER FORM */
+    .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--borde); }
+    .form-note { font-size: 12px; color: var(--suave); display: flex; align-items: center; gap: 6px; }
+    .form-note svg { width: 13px; height: 13px; stroke: var(--lagoon); fill: none; }
+    .btn-submit { background: var(--sea); color: #fff; border: none; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; padding: 13px 28px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: filter 0.18s, transform 0.15s; }
+    .btn-submit:hover { filter: brightness(0.9); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-submit svg { width: 15px; height: 15px; stroke: #fff; fill: none; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* OVERLAY ÉXITO */
+    .success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
+    .success-overlay.show { display: flex; }
+    .success-card { background: var(--blanco); border: 1px solid var(--borde); padding: 48px; max-width: 420px; width: 90%; text-align: center; animation: popIn 0.3s ease; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-card h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+    .success-card p { font-size: 14px; color: var(--suave); line-height: 1.7; margin-bottom: 24px; }
+    .btn-home { display: inline-flex; align-items: center; gap: 8px; background: var(--texto); color: #fff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 24px; transition: opacity 0.15s; }
+    .btn-home:hover { opacity: 0.8; color: #fff; }
+
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } .hero-inner { grid-template-columns: 1fr; } .hero-stats { display: none; } }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-body { padding: 20px; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand me-2" href="/"><img src="/image/logo_sin_fondo.png" height="40" alt="Logo"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contacto">Contacto</a></li>
+          <li class="nav-item"><a class="nav-link" href="/locales">Locales</a></li>
+          <li class="nav-item"><a class="nav-link" href="/rutas">Rutas</a></li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <% if (user) { %>
+            <span class="me-3" style="font-size:13px;">Hola, <strong><%= user.username %></strong></span>
+            <div class="dropdown ms-2">
+              <button class="btn btn-light border rounded-circle" type="button" data-bs-toggle="dropdown"><i class="bi bi-list" style="font-size:20px;"></i></button>
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person"></i> Ver perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item text-danger" id="logout-btn"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button></li>
+              </ul>
+            </div>
+          <% } else { %>
+            <a class="btn btn-primary btn-sm" href="/login">Iniciar Sesión</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-ring ring-1"></div>
+    <div class="hero-ring ring-2"></div>
+    <div class="hero-ring ring-3"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag">Conviértete en vendedor</div>
+        <h1>Registra tu<br><em>local en SJR</em></h1>
+        <p>Llega a más clientes en San Juan del Río. Publica tus productos y gestiona tu inventario desde un solo panel.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>+48h</strong><span>Revisión máx.</span></div>
+        <div class="hero-stat"><strong>100%</strong><span>Gratuito</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Pasos del proceso
+        </div>
+        <div class="steps">
+          <div class="step active" id="step-1">
+            <div class="step-num">1</div>
+            <div class="step-info"><strong>Datos del negocio</strong><span>Nombre, tipo y descripción</span></div>
+          </div>
+          <div class="step" id="step-2">
+            <div class="step-num">2</div>
+            <div class="step-info"><strong>Contacto y ubicación</strong><span>Teléfono, email y dirección</span></div>
+          </div>
+          <div class="step" id="step-3">
+            <div class="step-num">3</div>
+            <div class="step-info"><strong>Documentación</strong><span>RFC y archivos</span></div>
+          </div>
+          <div class="step" id="step-4">
+            <div class="step-num">4</div>
+            <div class="step-info"><strong>Validación</strong><span>Revisión por el equipo</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>⏱ Tiempo de revisión</strong>
+        <p>Revisamos solicitudes en <strong>24 a 48 horas</strong>. Te notificaremos por correo con la resolución.</p>
+      </div>
+    </aside>
+
+    <!-- FORMULARIO -->
+    <main>
+      <div class="form-card">
+        <div class="form-card-header">
+          <div>
+            <h2>Solicitud de registro</h2>
+            <p>Campos con <span style="color:var(--rojo)">*</span> son obligatorios</p>
+          </div>
+        </div>
+        <div class="form-body">
+
+          <!-- PROGRESO -->
+          <div class="progress-wrap">
+            <div class="progress-top"><span>Progreso</span><span id="pct">0%</span></div>
+            <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+          </div>
+
+          <form id="vendorForm" novalidate>
+
+            <!-- SECCIÓN 1: DATOS DEL NEGOCIO -->
+            <div class="form-section">
+              <div class="section-label">Datos del negocio</div>
+              <div class="form-grid">
+                <div class="field full" id="f-nombre-local">
+                  <label>Nombre del local <span>*</span></label>
+                  <input type="text" name="nombre_local" placeholder="Ej. Tacos El Rey, Farmacia San José...">
+                  <div class="err">Ingresa el nombre del local.</div>
+                </div>
+                <div class="field" id="f-nombre">
+                  <label>Nombre del vendedor <span>*</span></label>
+                  <input type="text" name="nombre" placeholder="Tu nombre completo">
+                  <div class="err">Ingresa tu nombre completo.</div>
+                </div>
+                <div class="field" id="f-categoria">
+                  <label>Categoría del negocio <span>*</span></label>
+                  <select name="categoria_id">
+                    <option value="">Selecciona una categoría...</option>
+                    <option value="10">Alimentos y Bebidas</option>
+                    <option value="11">Papelería y Oficina</option>
+                    <option value="12">Salud y Belleza</option>
+                    <option value="13">Ferretería y Construcción</option>
+                    <option value="14">Panadería y Repostería</option>
+                    <option value="15">Automotriz</option>
+                    <option value="16">Mascotas</option>
+                    <option value="17">Ropa y Accesorios</option>
+                    <option value="18">Servicios y Otros</option>
+                  </select>
+                  <div class="err">Selecciona una categoría.</div>
+                </div>
+                <div class="field" id="f-años">
+                  <label>Años en operación <span>*</span></label>
+                  <input type="number" name="años_operacion" placeholder="0" min="0" max="100">
+                  <div class="err">Indica los años en operación.</div>
+                </div>
+                <div class="field full" id="f-descripcion">
+                  <label>Descripción del negocio <span>*</span></label>
+                  <textarea name="descripcion" placeholder="¿Qué vendes? ¿A qué público te diriges? Describe brevemente tu negocio..."></textarea>
+                  <div class="err">Agrega una descripción de tu negocio.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN 2: CONTACTO Y UBICACIÓN -->
+            <div class="form-section">
+              <div class="section-label">Contacto y ubicación</div>
+              <div class="form-grid">
+                <div class="field" id="f-email">
+                  <label>Correo electrónico <span>*</span></label>
+                  <input type="email" name="email" placeholder="correo@ejemplo.com">
+                  <div class="err">Ingresa un correo válido.</div>
+                </div>
+                <div class="field" id="f-telefono1">
+                  <label>Teléfono 1 <span>*</span></label>
+                  <input type="tel" name="telefono_1" placeholder="442-000-0000" maxlength="15">
+                  <div class="err">Ingresa un teléfono válido.</div>
+                </div>
+                <div class="field" id="f-telefono2">
+                  <label>Teléfono 2 (opcional)</label>
+                  <input type="tel" name="telefono_2" placeholder="442-000-0000" maxlength="15">
+                </div>
+                <div class="field" id="f-ciudad">
+                  <label>Ciudad / Municipio <span>*</span></label>
+                  <input type="text" name="ciudad" placeholder="San Juan del Río" value="San Juan del Río">
+                  <div class="err">Ingresa tu ciudad.</div>
+                </div>
+                <div class="field full" id="f-direccion">
+                  <label>Dirección del local <span>*</span></label>
+                  <input type="text" name="direccion" placeholder="Calle, número, colonia, San Juan del Río">
+                  <div class="err">Ingresa la dirección del local.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN 3: INVENTARIO -->
+            <div class="form-section">
+              <div class="section-label">Inventario estimado</div>
+              <div class="form-grid">
+                <div class="field" id="f-productos">
+                  <label>Cantidad estimada de productos <span>*</span></label>
+                  <select name="cantidad_productos">
+                    <option value="">Selecciona...</option>
+                    <option>1 – 10</option>
+                    <option>11 – 50</option>
+                    <option>51 – 200</option>
+                    <option>201 – 500</option>
+                    <option>Más de 500</option>
+                  </select>
+                  <div class="err">Selecciona la cantidad de productos.</div>
+                </div>
+                <div class="field" id="f-domicilio">
+                  <label>¿Ofreces servicio a domicilio? <span>*</span></label>
+                  <select name="servicio_domicilio">
+                    <option value="">Selecciona...</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                  </select>
+                  <div class="err">Indica si ofreces domicilio.</div>
+                </div>
+                <div class="field full" id="f-tipopago">
+                  <label>Tipos de pago que aceptas <span>*</span></label>
+                  <select name="tipo_de_pago">
+                    <option value="">Selecciona...</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="tarjeta">Tarjeta</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="todos">Todos los métodos</option>
+                  </select>
+                  <div class="err">Selecciona un tipo de pago.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN 5: TÉRMINOS -->
+            <div class="form-section">
+              <div class="section-label">Términos y condiciones</div>
+              <div class="check-group">
+                <label class="check-item">
+                  <input type="checkbox" name="terminos" id="chkTerminos">
+                  <div class="check-box">✓</div>
+                  <div class="check-label">Acepto los <a href="#">Términos y Condiciones</a> de Mi Ruta SJR para vendedores. <span style="color:var(--rojo)">*</span></div>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" name="privacidad" id="chkPrivacidad">
+                  <div class="check-box">✓</div>
+                  <div class="check-label">He leído y acepto el <a href="#">Aviso de Privacidad</a>. <span style="color:var(--rojo)">*</span></div>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" name="veracidad">
+                  <div class="check-box">✓</div>
+                  <div class="check-label">Confirmo que la información proporcionada es verídica y completa.</div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <div class="form-note">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Tu información está cifrada y es confidencial
+              </div>
+              <button type="submit" class="btn-submit" id="btnSubmit">
+                <div class="spinner" id="spinner"></div>
+                <span id="btnText">Enviar solicitud</span>
+                <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+      <div class="success-icon">.</div>
+      <h3>¡Solicitud enviada!</h3>
+      <p>Gracias por registrarte en Mi Ruta SJR. Nuestro equipo revisará tu solicitud y te notificará por correo en un plazo de <strong>24 a 48 horas</strong>.</p>
+      <a href="/menu_principal" class="btn-home">Volver al inicio →</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const required = ['nombre_local','nombre','categoria_id','años_operacion','descripcion','email','telefono_1','ciudad','direccion','cantidad_productos','servicio_domicilio','tipo_de_pago'];
+  const form = document.getElementById('vendorForm');
+
+  // PROGRESO
+  function updateProgress() {
+    let filled = 0;
+    required.forEach(n => {
+      const el = form.querySelector(`[name="${n}"]`);
+      if (el && el.value.trim()) filled++;
+    });
+    const p = Math.round((filled / required.length) * 100);
+    document.getElementById('progFill').style.width = p + '%';
+    document.getElementById('pct').textContent = p + '%';
+    if (p >= 20) document.getElementById('step-1').classList.add('done');
+    if (p >= 50) document.getElementById('step-2').classList.add('done');
+    if (p >= 80) document.getElementById('step-3').classList.add('done');
+    if (p >= 95) document.getElementById('step-4').classList.add('active');
+  }
+
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+
+  // CHECKBOXES
+  document.querySelectorAll('.check-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const cb = item.querySelector('input');
+      cb.checked = !cb.checked;
+    });
+  });
+
+  // VALIDACIÓN
+  function validate() {
+    let ok = true;
+    const rules = {
+      'nombre_local':       { id: 'f-nombre-local', test: v => v.trim().length >= 2 },
+      'nombre':             { id: 'f-nombre',        test: v => v.trim().length >= 2 },
+      'categoria_id':       { id: 'f-categoria',     test: v => v !== '' },
+      'años_operacion':     { id: 'f-años',           test: v => v !== '' },
+      'descripcion':        { id: 'f-descripcion',   test: v => v.trim().length >= 10 },
+      'email':              { id: 'f-email',         test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+      'telefono_1':         { id: 'f-telefono1',     test: v => v.trim().length >= 7 },
+      'ciudad':             { id: 'f-ciudad',        test: v => v.trim().length >= 2 },
+      'direccion':          { id: 'f-direccion',     test: v => v.trim().length >= 5 },
+      'cantidad_productos': { id: 'f-productos',     test: v => v !== '' },
+      'servicio_domicilio': { id: 'f-domicilio',     test: v => v !== '' },
+      'tipo_de_pago':       { id: 'f-tipopago',      test: v => v !== '' },
+    };
+    Object.entries(rules).forEach(([name, rule]) => {
+      const el   = form.querySelector(`[name="${name}"]`);
+      const wrap = document.getElementById(rule.id);
+      if (!wrap) return;
+      const valid = el && rule.test(el.value);
+      wrap.classList.toggle('error', !valid);
+      if (!valid) ok = false;
+    });
+    if (!document.getElementById('chkTerminos').checked || !document.getElementById('chkPrivacidad').checked) ok = false;
+    return ok;
+  }
+
+  // SUBMIT
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validate()) { form.querySelector('.error input, .error select, .error textarea')?.focus(); return; }
+
+    const btn = document.getElementById('btnSubmit');
+    const sp  = document.getElementById('spinner');
+    const tx  = document.getElementById('btnText');
+    btn.disabled = true; sp.style.display = 'block'; tx.textContent = 'Enviando...';
+
+    const data = {
+      nombre:   form.querySelector('[name="nombre"]').value.trim(),
+      negocio:  form.querySelector('[name="nombre_local"]').value.trim(),
+      email:    form.querySelector('[name="email"]').value.trim(),
+      telefono: form.querySelector('[name="telefono_1"]').value.trim(),
+      mensaje: `
+          Categoría: ${form.querySelector('[name="categoria_id"]').value}
+          Dirección: ${form.querySelector('[name="direccion"]').value}
+          Tipo de pago: ${form.querySelector('[name="tipo_de_pago"]').value}
+          Domicilio: ${form.querySelector('[name="servicio_domicilio"]').value}
+          Productos: ${form.querySelector('[name="cantidad_productos"]').value}
+                `.trim()
+              };
+
+    try {
+      const res    = await fetch('/registro_vendedor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const result = await res.json();
+      if (res.ok) { document.getElementById('successOverlay').classList.add('show'); }
+      else { alert(result.message || 'Error al enviar la solicitud'); }
+    } catch { alert('Error de conexión. Intenta de nuevo.'); }
+    finally { btn.disabled = false; sp.style.display = 'none'; tx.textContent = 'Enviar solicitud'; }
+  });
+
+  // LOGOUT
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) logoutBtn.addEventListener('click', () => fetch('/logout', { method: 'POST' }).then(() => window.location.href = '/login'));
+</script>
+
+</body>
+</html>

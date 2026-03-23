@@ -1,0 +1,260 @@
+/* ══════════════════════════════════
+   VARIABLES — mismo sistema que rutas y perfil
+══════════════════════════════════ */
+:root {
+  --bg: #F5F4F0;
+  --text: #111;
+  --muted: #888;
+  --accent: #00B86B;
+  --card-radius: 20px;
+}
+
+/* ══════════════════════════════════
+   BASE
+══════════════════════════════════ */
+body {
+  background: var(--bg) !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+/* ══════════════════════════════════
+   NAVBAR
+══════════════════════════════════ */
+.navbar {
+  background: #fff !important;
+  border-bottom: 1px solid #e8e8e8;
+  box-shadow: none !important;
+}
+
+.navbar-brand img { height: 36px; }
+
+.nav-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #555 !important;
+  font-weight: 500;
+}
+
+.nav-link:hover { color: var(--text) !important; }
+
+.btn-volver {
+  background: var(--text) !important;
+  color: var(--bg) !important;
+  border: none !important;
+  border-radius: 100px !important;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 8px 18px !important;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btn-volver:hover { opacity: 0.72; color: var(--bg) !important; }
+
+/* ══════════════════════════════════
+   WRAPPER
+══════════════════════════════════ */
+.datos-wrapper {
+  max-width: 520px;
+  margin: 48px auto 64px;
+  padding: 0 24px;
+}
+
+/* ══════════════════════════════════
+   HEADER
+══════════════════════════════════ */
+.datos-header {
+  margin-bottom: 40px;
+}
+
+.datos-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.datos-header h1 span {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.42em;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.datos-divider {
+  height: 1px;
+  background: #ddd;
+  margin-bottom: 32px;
+}
+
+/* ══════════════════════════════════
+   CARD
+══════════════════════════════════ */
+.datos-card {
+  background: #fff;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  position: relative;
+  animation: cardIn 0.35s ease both;
+}
+
+.datos-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--accent);
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+
+/* ══════════════════════════════════
+   AVATAR BLOCK
+══════════════════════════════════ */
+.avatar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 24px 28px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar-block img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--bg);
+  outline: 2px solid #e0e0e0;
+  margin-bottom: 14px;
+}
+
+.avatar-block .user-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+}
+
+.avatar-block .user-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* ══════════════════════════════════
+   DATOS LISTA
+══════════════════════════════════ */
+.datos-list {
+  padding: 8px 0;
+}
+
+.dato-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid #f5f5f5;
+  gap: 16px;
+}
+
+.dato-row:last-child { border-bottom: none; }
+
+.dato-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.dato-value {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
+  text-align: right;
+  word-break: break-all;
+}
+
+.dato-value.empty {
+  color: #bbb;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.dato-value.id-val {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-family: monospace;
+}
+
+/* ══════════════════════════════════
+   BOTÓN EDITAR
+══════════════════════════════════ */
+.card-actions {
+  padding: 20px 24px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-editar-perfil {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 12px;
+  transition: transform 0.2s ease, opacity 0.2s;
+}
+
+.btn-editar-perfil:hover {
+  transform: translateY(-2px);
+  opacity: 0.88;
+  color: #fff;
+}
+
+/* ══════════════════════════════════
+   FOOTER
+══════════════════════════════════ */
+footer {
+  background: #fff !important;
+  border-top: 1px solid #e8e8e8;
+  padding: 20px 0 !important;
+}
+
+footer p, footer a {
+  font-size: 0.78rem !important;
+  color: #999 !important;
+}
+
+footer a:hover { color: var(--text) !important; }
+
+/* ══════════════════════════════════
+   ANIMACIÓN
+══════════════════════════════════ */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media (max-width: 560px) {
+  .datos-wrapper { padding: 0 16px; margin-top: 32px; }
+  .dato-row { flex-direction: column; gap: 4px; }
+  .dato-value { text-align: left; }
+}

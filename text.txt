@@ -1,0 +1,138 @@
+// Modelo Rol
+const rolSchema = new mongoose.Schema({
+    nombre: { type: String, required: true, unique: true }
+});
+
+const Rol = mongoose.model('Rol', rolSchema);
+
+// Modelo Usuario
+const usuarioSchema = new mongoose.Schema({
+    nombre: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    contrasena: { type: String, required: true },
+    rol: { type: mongoose.Schema.Types.ObjectId, ref: 'Rol', required: true }
+});
+
+const Usuario = mongoose.model('Usuario', usuarioSchema);
+
+
+async function crearDatos() {
+    // Crear roles
+    const adminRol = await Rol.create({ nombre: 'admin' });
+    const usuarioRol = await Rol.create({ nombre: 'usuario' });
+
+    // Crear usuarios asignando el rol correspondiente
+    await Usuario.create([
+        { nombre: 'Bryan', email: 'bryan@local.com', contrasena: 'hashed_password', rol: adminRol._id },
+        { nombre: 'Luis', email: 'luis@local.com', contrasena: 'hashed_password', rol: usuarioRol._id }
+    ]);
+
+    console.log('Datos creados en dbLocal');
+}
+
+crearDatos().catch(console.error);
+
+
+
+
+<h1>Bienvenido, <%= usuario.nombre %></h1>
+
+<% if (usuario.rol === "admin") { %>
+    <div class="card mt-4 p-3 bg-light">
+        <h2>Lista de Usuarios</h2>
+        <ul>
+            <li>Usuario 1</li>
+            <li>Usuario 2</li>
+            <li>Usuario 3</li>
+        </ul>
+    </div>
+<% } else { %>
+    <p>No tienes permisos para ver la lista de usuarios.</p>
+<% } %>
+
+
+
+cambios de repository:
+
+
+//Modelo User
+const User = Schema('User', {
+    _id: {type: String, required: true},
+    username : {type: String, required: true},
+    password: {type: String, required: true}
+})
+
+export class UserRepository {
+    static async create({username, password}){
+        Validation.username(username)
+        Validation.password(password)
+        
+        //2 aseguarar que el username no existe
+        const user = User.findOne({username})
+        if (user) {
+            throw new Error("user name already exists");
+        }
+
+        //craer id emcriptada
+        const id = crypto.randomUUID()
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+
+        //guardar el usuarii
+        User.create({
+            _id: id,
+            username,
+            password: hashedPassword,
+        }).save()
+    
+        return id;
+    }
+
+    static async login({username, password}){
+        Validation.username(username)
+        Validation.password(password)
+
+        const user = User.findOne({ username })
+        if(!user) throw new Error("username does not exist ");
+
+        const isValid = await bcrypt.compare(password, user.password)// validar
+        if(!isValid) throw new Error("password is invalid");
+
+        const {password: _, ...publicUser} = user //devuelve solo el user
+        
+        return publicUser
+    }
+    // Mostrar todos los contactos
+    static async mostrarContactos() {
+        try {
+            const contactosDB = User.find(); // no necesita await
+            console.log(contactosDB);
+            return contactosDB;
+        } catch (error) {
+            console.error("Error al obtener contactos:", error);
+        }
+    }
+}
+
+
+
+
+
+<%- include('templates/navbar') %>
+
+<div class="forms-wrapper">
+    <div class="forms-container">
+        <% if (typeof username != 'undefined') { %>
+            <div>
+                <h2>Hola <%= username %>!</h2>
+                <p>Estás en el panel de administración</p>
+                <button id="close-session">Cerrar Sesión</button>
+            </div>
+        <% } else { %>
+            <%- include('partials/login-form') %>
+            <%- include('partials/register-form') %>
+        <% } %>
+    </div>
+</div>
+
+<script src="/JS/login.js"></script>
+<%- include('templates/footer') %>

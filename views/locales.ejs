@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locales — Mi Ruta SJR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
+      --burnt: #DE7A22; --burnt-claro: #FEF0E3; --burnt-borde: #F5C99A;
+      --lagoon: #6AB187; --lagoon-claro: #EDF6F0; --lagoon-borde: #B5DAC3;
+      --sand: #F4CC70; --sand-claro: #FEF8E7; --sand-borde: #F0E0A0;
+      --fondo: #F5F5F3; --blanco: #ffffff; --texto: #1E1E1E; --suave: #888; --borde: #E8E8E4;
+    }
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: var(--blanco); border-bottom: 1.5px solid var(--borde); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-size: 18px; font-weight: 800; color: var(--texto); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo-chip { background: var(--sea); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; }
+    .nav-search { display: flex; align-items: center; gap: 8px; background: var(--fondo); border: 1.5px solid var(--borde); border-radius: 10px; padding: 8px 14px; transition: border-color 0.15s; }
+    .nav-search:focus-within { border-color: var(--sea); }
+    .nav-search svg { width: 15px; height: 15px; stroke: var(--suave); fill: none; flex-shrink: 0; }
+    .nav-search input { background: none; border: none; outline: none; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--texto); width: 200px; }
+    .nav-search input::placeholder { color: var(--suave); }
+    .nav-back { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--suave); font-size: 13px; font-weight: 500; transition: color 0.15s; }
+    .nav-back:hover { color: var(--sea); }
+    .nav-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+    /* HERO */
+    .hero { background: var(--sea); padding: 48px 28px 44px; position: relative; overflow: hidden; }
+    .hero-ring { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); }
+    .ring-1 { width: 360px; height: 360px; top: -120px; right: -60px; }
+    .ring-2 { width: 200px; height: 200px; top: 10px; right: 90px; }
+    .ring-3 { width: 120px; height: 120px; bottom: -30px; left: 38%; }
+    .hero-inner { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px; position: relative; z-index: 1; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+    .hero h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; line-height: 1.05; margin-bottom: 8px; }
+    .hero p { font-size: 14px; color: rgba(255,255,255,0.72); max-width: 380px; }
+    .stats-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .stat-chip { background: rgba(255,255,255,0.16); border-radius: 14px; padding: 14px 22px; text-align: center; min-width: 110px; }
+    .stat-chip strong { font-size: 28px; font-weight: 800; color: #fff; display: block; }
+    .stat-chip span { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 600; }
+
+    /* LAYOUT */
+    .layout { max-width: 1280px; margin: 0 auto; padding: 24px 20px 60px; display: grid; grid-template-columns: 220px 1fr; gap: 20px; }
+
+    /* FILTROS */
+    .filters { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 14px; padding: 20px; position: sticky; top: 80px; height: fit-content; }
+    .filter-title { font-size: 13px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .filter-title svg { width: 14px; height: 14px; stroke: var(--sea); fill: none; }
+    .filter-section { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1.5px solid var(--borde); }
+    .filter-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .filter-label { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--suave); margin-bottom: 10px; display: block; }
+    .filter-opts { display: flex; flex-direction: column; gap: 5px; }
+    .filter-opt { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--texto); padding: 6px 8px; border-radius: 8px; transition: background 0.12s; }
+    .filter-opt:hover { background: var(--fondo); }
+    .filter-opt input { accent-color: var(--sea); width: 14px; height: 14px; cursor: pointer; }
+    .btn-limpiar { width: 100%; background: none; color: var(--suave); border: 1.5px solid var(--borde); border-radius: 10px; padding: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+    .btn-limpiar:hover { border-color: var(--texto); color: var(--texto); }
+
+    /* CONTENT */
+    .content-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .result-count { font-size: 14px; color: var(--suave); }
+    .result-count strong { color: var(--texto); }
+    .sort-select { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 10px; padding: 7px 12px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--texto); outline: none; cursor: pointer; }
+    .sort-select:focus { border-color: var(--sea); }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+    .vcard { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 16px; overflow: hidden; text-decoration: none; color: var(--texto); display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; animation: entrar 0.35s ease both; }
+    .vcard:hover { transform: translateY(-4px); border-color: var(--sea); box-shadow: 0 8px 24px rgba(32,148,139,0.1); }
+    @keyframes entrar { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+    /* CARD BAND */
+    .vcard-band { padding: 20px 20px 16px; position: relative; overflow: hidden; }
+    .cc-0 .vcard-band { background: var(--sea); }
+    .cc-1 .vcard-band { background: var(--burnt); }
+    .cc-2 .vcard-band { background: var(--lagoon); }
+    .cc-3 .vcard-band { background: var(--sand); }
+    .band-letter { position: absolute; right: 8px; top: -8px; font-size: 80px; font-weight: 800; color: rgba(255,255,255,0.14); line-height: 1; pointer-events: none; user-select: none; }
+    .cc-3 .band-letter { color: rgba(90,64,0,0.12); }
+    .band-avatar { width: 46px; height: 46px; background: rgba(255,255,255,0.22); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .cc-3 .band-avatar { color: #5A4000; }
+    .band-local { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .cc-3 .band-local { color: #5A4000; }
+    .band-nombre { font-size: 12px; color: rgba(255,255,255,0.72); font-weight: 500; }
+    .cc-3 .band-nombre { color: rgba(90,64,0,0.6); }
+    .band-status { position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 9px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+    .status-dot.inactive { background: #f87171; }
+    .band-status span { font-size: 10px; font-weight: 700; color: #fff; }
+    .cc-3 .band-status span { color: #5A4000; }
+
+    /* CARD BODY */
+    .vcard-body { padding: 14px 18px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .info-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--suave); }
+    .info-icon { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .cc-0 .info-icon { background: var(--sea-claro); }
+    .cc-1 .info-icon { background: var(--burnt-claro); }
+    .cc-2 .info-icon { background: var(--lagoon-claro); }
+    .cc-3 .info-icon { background: var(--sand-claro); }
+    .info-icon svg { width: 13px; height: 13px; fill: none; }
+    .cc-0 .info-icon svg { stroke: var(--sea); }
+    .cc-1 .info-icon svg { stroke: var(--burnt); }
+    .cc-2 .info-icon svg { stroke: var(--lagoon); }
+    .cc-3 .info-icon svg { stroke: #9A7000; }
+    .info-text { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+    /* CARD FOOTER */
+    .vcard-footer { padding: 12px 18px 16px; border-top: 1.5px solid var(--borde); display: flex; align-items: center; justify-content: space-between; }
+    .productos-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+    .cc-0 .productos-pill { background: var(--sea-claro); color: var(--sea); border: 1px solid var(--sea-borde); }
+    .cc-1 .productos-pill { background: var(--burnt-claro); color: var(--burnt); border: 1px solid var(--burnt-borde); }
+    .cc-2 .productos-pill { background: var(--lagoon-claro); color: #2D6644; border: 1px solid var(--lagoon-borde); }
+    .cc-3 .productos-pill { background: var(--sand-claro); color: #7A5800; border: 1px solid var(--sand-borde); }
+    .productos-pill svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+    .btn-ver { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: filter 0.15s, transform 0.15s; color: #fff; }
+    .btn-ver:hover { filter: brightness(0.9); transform: scale(1.02); }
+    .cc-0 .btn-ver { background: var(--sea); }
+    .cc-1 .btn-ver { background: var(--burnt); }
+    .cc-2 .btn-ver { background: var(--lagoon); }
+    .cc-3 .btn-ver { background: #9A7000; }
+    .btn-ver svg { width: 13px; height: 13px; stroke: #fff; fill: none; }
+
+    /* EMPTY */
+    .empty { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--suave); }
+    .empty svg { width: 48px; height: 48px; stroke: #ddd; fill: none; display: block; margin: 0 auto 12px; }
+    .empty p { font-size: 15px; }
+
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .filters { position: static; } }
+    @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } .nav-search { display: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">
+      Mi Ruta SJR
+      <span class="nav-logo-chip">Locales</span>
+    </a>
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="buscar" placeholder="Buscar local o vendedor...">
+    </div>
+    <a href="/" class="nav-back">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+      Inicio
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-ring ring-1"></div>
+    <div class="hero-ring ring-2"></div>
+    <div class="hero-ring ring-3"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag">Comercio local · San Juan del Río</div>
+        <h1>Locales<br>Registrados</h1>
+        <p>Explora todos los negocios de la plataforma y consulta sus productos.</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-chip">
+          <strong><%= vendedores.length %></strong>
+          <span>Locales activos</span>
+        </div>
+        <div class="stat-chip">
+          <strong><%= vendedores.reduce((a,v) => a + (v.quantity_products || 0), 0) %></strong>
+          <span>Productos totales</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- FILTROS -->
+    <aside class="filters">
+      <div class="filter-title">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtros
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">Estado</span>
+        <div class="filter-opts">
+          <label class="filter-opt"><input type="radio" name="estado" value="todos" checked onchange="aplicarFiltros()"> Todos</label>
+          <label class="filter-opt"><input type="radio" name="estado" value="activo" onchange="aplicarFiltros()"> Activos</label>
+          <label class="filter-opt"><input type="radio" name="estado" value="inactivo" onchange="aplicarFiltros()"> Inactivos</label>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">Productos</span>
+        <div class="filter-opts">
+          <label class="filter-opt"><input type="radio" name="prods" value="todos" checked onchange="aplicarFiltros()"> Todos</label>
+          <label class="filter-opt"><input type="radio" name="prods" value="con" onchange="aplicarFiltros()"> Con productos</label>
+          <label class="filter-opt"><input type="radio" name="prods" value="sin" onchange="aplicarFiltros()"> Sin productos</label>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">Ordenar</span>
+        <select class="sort-select" id="sortSelect" onchange="aplicarFiltros()" style="width:100%;">
+          <option value="default">Más relevantes</option>
+          <option value="nombre-asc">Nombre A-Z</option>
+          <option value="nombre-desc">Nombre Z-A</option>
+          <option value="prods-desc">Más productos</option>
+          <option value="prods-asc">Menos productos</option>
+        </select>
+      </div>
+
+      <button class="btn-limpiar" onclick="limpiarFiltros()">Limpiar filtros</button>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <div class="content">
+      <div class="content-top">
+        <div class="result-count"><strong id="countVisible"><%= vendedores.length %></strong> locales encontrados</div>
+      </div>
+
+      <div class="grid" id="gridLocales">
+        <% if (vendedores.length > 0) { %>
+          <% vendedores.forEach((v, i) => { %>
+            <%
+              var letra   = (v.nombre_local || 'L')[0].toUpperCase();
+              var activo  = v.is_activated;
+              var delay   = (i * 0.04).toFixed(2);
+              var nProds  = v.quantity_products || 0;
+            %>
+            <div class="vcard cc-<%= i % 4 %>"
+              style="animation-delay:<%= delay %>s"
+              data-nombre="<%= (v.nombre||'').toLowerCase() %>"
+              data-local="<%= (v.nombre_local||'').toLowerCase() %>"
+              data-activo="<%= activo ? 'activo' : 'inactivo' %>"
+              data-prods="<%= nProds %>">
+
+              <!-- BAND -->
+              <div class="vcard-band">
+                <div class="band-letter"><%= letra %></div>
+                <div class="band-status">
+                  <div class="status-dot <%= activo ? '' : 'inactive' %>"></div>
+                  <span><%= activo ? 'Activo' : 'Inactivo' %></span>
+                </div>
+                <div class="band-avatar"><%= letra %></div>
+                <div class="band-local"><%= v.nombre_local %></div>
+                <div class="band-nombre"><%= v.nombre %></div>
+              </div>
+
+              <!-- BODY -->
+              <div class="vcard-body">
+                <% if (v.direccion) { %>
+                <div class="info-row">
+                  <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 21s-8-7-8-13a8 8 0 0 1 16 0c0 6-8 13-8 13z"/><circle cx="12" cy="8" r="3"/></svg></div>
+                  <span class="info-text"><%= v.direccion %></span>
+                </div>
+                <% } %>
+                <% if (v.telefono_1) { %>
+                <div class="info-row">
+                  <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.07 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 3.98 2h3a2 2 0 0 1 2 1.72c.13 1 .38 1.99.74 2.94a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.14-1.14a2 2 0 0 1 2.11-.45c.95.36 1.94.61 2.94.74A2 2 0 0 1 22 16.92z"/></svg></div>
+                  <span class="info-text"><%= v.telefono_1 %></span>
+                </div>
+                <% } %>
+                <% if (v.email) { %>
+                <div class="info-row">
+                  <div class="info-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg></div>
+                  <span class="info-text"><%= v.email %></span>
+                </div>
+                <% } %>
+              </div>
+
+              <!-- FOOTER -->
+              <div class="vcard-footer">
+                <div class="productos-pill">
+                  <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  <%= nProds %> productos
+                </div>
+                <a class="btn-ver" href="/locales/<%= v.id %>/productos">
+                  Ver productos
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <p>No hay locales registrados aún.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cards = Array.from(document.querySelectorAll('.vcard'));
+
+    document.getElementById('buscar').addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      cards.forEach(c => {
+        const match = (c.dataset.nombre||'').includes(q) || (c.dataset.local||'').includes(q);
+        c.style.display = match ? '' : 'none';
+      });
+      actualizarCount();
+    });
+
+    function aplicarFiltros() {
+      const estado = document.querySelector('input[name="estado"]:checked')?.value || 'todos';
+      const prods  = document.querySelector('input[name="prods"]:checked')?.value || 'todos';
+      const sort   = document.getElementById('sortSelect').value;
+      const q      = document.getElementById('buscar').value.toLowerCase();
+
+      let visibles = cards.filter(c => {
+        const nombre = (c.dataset.nombre||'') + (c.dataset.local||'');
+        if (q && !nombre.includes(q)) return false;
+        if (estado !== 'todos' && c.dataset.activo !== estado) return false;
+        const np = parseInt(c.dataset.prods) || 0;
+        if (prods === 'con'  && np <= 0) return false;
+        if (prods === 'sin'  && np > 0)  return false;
+        return true;
+      });
+
+      visibles.sort((a, b) => {
+        const na = (a.dataset.local||'');
+        const nb = (b.dataset.local||'');
+        const pa = parseInt(a.dataset.prods) || 0;
+        const pb = parseInt(b.dataset.prods) || 0;
+        if (sort === 'nombre-asc')  return na.localeCompare(nb);
+        if (sort === 'nombre-desc') return nb.localeCompare(na);
+        if (sort === 'prods-desc')  return pb - pa;
+        if (sort === 'prods-asc')   return pa - pb;
+        return 0;
+      });
+
+      const grid = document.getElementById('gridLocales');
+      cards.forEach(c => c.style.display = 'none');
+
+      if (visibles.length === 0) {
+        let empty = grid.querySelector('.empty-msg');
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.className = 'empty empty-msg';
+          empty.style.gridColumn = '1/-1';
+          empty.innerHTML = '<p>No se encontraron locales con esos filtros.</p>';
+          grid.appendChild(empty);
+        }
+      } else {
+        const empty = grid.querySelector('.empty-msg');
+        if (empty) empty.remove();
+        visibles.forEach((c, i) => {
+          c.style.display = '';
+          c.style.animationDelay = (i * 0.03) + 's';
+          grid.appendChild(c);
+        });
+      }
+
+      document.getElementById('countVisible').textContent = visibles.length;
+    }
+
+    function limpiarFiltros() {
+      document.querySelector('input[name="estado"][value="todos"]').checked = true;
+      document.querySelector('input[name="prods"][value="todos"]').checked  = true;
+      document.getElementById('sortSelect').value = 'default';
+      document.getElementById('buscar').value = '';
+      aplicarFiltros();
+    }
+
+    function actualizarCount() {
+      const vis = cards.filter(c => c.style.display !== 'none').length;
+      document.getElementById('countVisible').textContent = vis;
+    }
+  </script>
+
+</body>
+</html>

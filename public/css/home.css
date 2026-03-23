@@ -1,0 +1,33 @@
+ body {
+      background-color: #f8edab;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+    }
+    header {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      background-color: #ffde59;
+      padding: 4rem 2rem;
+    }
+    header h1 {
+      font-weight: 700;
+      color: #333;
+    }
+    header p {
+      font-size: 1.1rem;
+      color: #555;
+    }
+    .hero-img {
+      max-width: 400px;
+      width: 100%;
+    }
+    section {
+      padding: 4rem 2rem;
+    }
+    footer {
+      background-color: #FFD54F;
+      text-align: center;
+      padding: 1.5rem;
+      color: #333;
+    }

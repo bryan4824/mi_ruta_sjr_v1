@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · Mi Ruta SJR</title>
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style_lista_usuario.css">
+  <style>
+    .dashboard-wrap{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 65px)}
+    .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto}
+    .sidebar-section{padding:0 20px;margin-bottom:8px}
+    .sidebar-label{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 12px;margin-bottom:6px;display:block}
+    .nav-side{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:.84rem;font-weight:500;color:#555;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s}
+    .nav-side:hover{background:var(--bg);color:var(--text)}
+    .nav-side.active{background:#f0f5ff;color:var(--accent);font-weight:600}
+    .nav-side svg{width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0}
+    .nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:100px}
+    .dash-content{padding:40px 36px 64px;background:var(--bg)}
+    .section{display:none}.section.active{display:block}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+    .stat-card{background:var(--surface);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden;animation:cardIn .35s ease both}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+    .stat-card.blue::before{background:var(--accent)}.stat-card.green::before{background:#22c55e}
+    .stat-card.red::before{background:#ef4444}.stat-card.amber::before{background:#f59e0b}
+    .stat-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .stat-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+    .stat-sub{font-size:.75rem;color:var(--muted)}
+    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px}
+    .chart-card{background:var(--surface);border-radius:var(--card-radius);padding:24px;position:relative;overflow:hidden;animation:cardIn .4s ease both}
+    .chart-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);border-radius:var(--card-radius) var(--card-radius) 0 0}
+    .chart-card.full{grid-column:1/-1}
+    .chart-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .chart-sub{font-size:.75rem;color:var(--muted);margin-bottom:20px}
+    .chart-wrap{position:relative;height:220px}.chart-wrap.tall{height:280px}
+    .form-card{background:var(--surface);border-radius:var(--card-radius);overflow:hidden;position:relative;animation:cardIn .35s ease both;margin-bottom:20px}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);border-radius:var(--card-radius) var(--card-radius) 0 0}
+    .form-header{padding:20px 24px 18px;border-bottom:1px solid var(--border)}
+    .form-header h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:2px}
+    .form-header p{font-size:.78rem;color:var(--muted)}
+    .form-body{padding:28px 24px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .form-grid .full{grid-column:1/-1}
+    .field{display:flex;flex-direction:column;gap:5px}
+    .field label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .field input,.field select{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;transition:border-color .18s;width:100%}
+    .field input:focus,.field select:focus{border-color:var(--accent);background:#fff}
+    .field input::placeholder{color:#bbb}
+    .field-hint{font-size:.7rem;color:var(--muted)}
+    .form-actions{display:flex;align-items:center;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:7px;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.05em;padding:9px 20px;border-radius:100px;border:none;cursor:pointer;transition:opacity .18s}
+    .btn:hover{opacity:.78}.btn svg{width:13px;height:13px;stroke:currentColor;fill:none}
+    .btn-primary{background:var(--text);color:#fff}
+    .btn-secondary{background:var(--bg);color:var(--text);border:1.5px solid #ddd}
+    .btn-success{background:#f0fdf4;color:#16a34a;border:1.5px solid #bbf7d0}
+    .btn-danger{background:#fff5f5;color:#e53e3e;border:1.5px solid #fecaca}
+    .btn-warning{background:#fffbeb;color:#b45309;border:1.5px solid #fde68a}
+    .tabla-card{background:var(--surface);border-radius:var(--card-radius);overflow:hidden;position:relative;animation:cardIn .35s ease both}
+    .tabla-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);border-radius:var(--card-radius) var(--card-radius) 0 0;z-index:1}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    thead tr{border-bottom:2px solid #f0f0f0}
+    thead th{font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:18px 20px 14px;white-space:nowrap}
+    tbody tr{border-bottom:1px solid #f5f5f5;transition:background .15s}
+    tbody tr:last-child{border-bottom:none}
+    tbody tr:hover{background:#fafafa}
+    tbody td{padding:14px 20px;color:#333;vertical-align:middle}
+    .rol-badge{display:inline-block;padding:4px 12px;border-radius:100px;font-size:.7rem;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.06em;text-transform:uppercase;background:#f0f0f0;color:#555}
+    .badge-activo{background:#f0fdf4;color:#16a34a}.badge-inactivo{background:#fff5f5;color:#e53e3e}
+    .acciones{display:flex;gap:8px}
+    .btn-accion{display:inline-flex;align-items:center;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;border:1.5px solid #e0e0e0;background:var(--bg);color:#666;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+    .btn-accion:hover{border-color:var(--accent);color:var(--accent);background:#f0f5ff}
+    .btn-accion.danger:hover{border-color:#e53e3e;color:#e53e3e;background:#fff5f5}
+    .btn-accion.warning:hover{border-color:#b45309;color:#b45309;background:#fffbeb}
+    /* VENDEDOR DROPDOWN */
+    .vd-wrap{position:relative}
+    .vd-input{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;width:100%;cursor:pointer;transition:border-color .18s}
+    .vd-input:focus{border-color:var(--accent);background:#fff}
+    .vd-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;z-index:100;max-height:220px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .vd-dropdown.open{display:block}
+    .vd-opt{padding:10px 14px;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .12s}
+    .vd-opt:last-child{border-bottom:none}
+    .vd-opt:hover{background:#f0f5ff}
+    .vd-opt-name{font-weight:600;font-size:.84rem;color:var(--text)}
+    .vd-opt-id{font-size:.68rem;color:var(--muted);font-family:monospace;margin-top:2px}
+    /* PASS */
+    .pass-mask{font-family:monospace;font-size:.78rem;color:var(--muted);letter-spacing:.05em}
+    .pass-toggle{background:none;border:none;cursor:pointer;font-size:.8rem;padding:2px 5px;color:var(--muted);transition:color .15s}
+    .pass-toggle:hover{color:var(--accent)}
+    /* MODAL */
+    .toast-custom{position:fixed;bottom:28px;right:28px;background:var(--text);color:#fff;font-size:.82rem;font-weight:600;padding:12px 20px;border-radius:100px;display:flex;align-items:center;gap:8px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s ease;font-family:'DM Sans',sans-serif}
+    .toast-custom.show{transform:translateY(0);opacity:1}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:200;display:none;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--surface);border-radius:var(--card-radius);padding:32px;width:100%;max-width:420px;margin:16px}
+    .modal-box h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:8px}
+    .modal-box p{font-size:.84rem;color:var(--muted);margin-bottom:16px;line-height:1.6}
+    .modal-field{margin-bottom:14px}
+    .modal-field label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+    .modal-field input{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;width:100%;transition:border-color .18s}
+    .modal-field input:focus{border-color:var(--accent);background:#fff}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+    .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty svg{width:40px;height:40px;stroke:#ddd;fill:none;display:block;margin:0 auto 10px}
+    .empty p{font-size:.84rem}
+    @media(max-width:900px){.dashboard-wrap{grid-template-columns:1fr}.sidebar{display:none}.dash-content{padding:24px 16px}.charts-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand me-2" href="#"><img src="/image/logo_sin_fondo.png" alt="Logo"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="/showUser">Usuarios</a></li>
+          <li class="nav-item"><a class="nav-link" href="/menu_principal">Menu principal</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn-nav-inicio" onclick="window.location.href='/menu_principal'">← Inicio</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <span class="sidebar-label">General</span>
+        <button class="nav-side active" onclick="showSection('overview')">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Resumen
+        </button>
+        <button class="nav-side" onclick="showSection('crear')">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+          Crear Vendedor
+        </button>
+      </div>
+      <div class="sidebar-section" style="margin-top:8px;">
+        <span class="sidebar-label">Gestión</span>
+        <button class="nav-side" onclick="showSection('vendedores')">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Vendedores
+        </button>
+        <button class="nav-side" onclick="showSection('credenciales')">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Credenciales
+        </button>
+        <button class="nav-side" onclick="showSection('solicitudes')">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Solicitudes
+          <span class="nav-badge" id="badgeCount">0</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="dash-content">
+
+      <!-- RESUMEN -->
+      <div class="section active" id="sec-overview">
+        <div class="page-header"><h1><span>Panel de administración</span>Resumen</h1></div>
+        <div class="page-divider"></div>
+        <div class="stats-grid">
+          <div class="stat-card blue"><div class="stat-label">Vendedores activos</div><div class="stat-value" id="statActivos">—</div><div class="stat-sub">usuarios verificados</div></div>
+          <div class="stat-card red"><div class="stat-label">Vendedores inactivos</div><div class="stat-value" id="statInactivos">—</div><div class="stat-sub">sin activar</div></div>
+          <div class="stat-card amber"><div class="stat-label">Solicitudes pendientes</div><div class="stat-value" id="statSolicitudes">—</div><div class="stat-sub">esperando revisión</div></div>
+          <div class="stat-card green"><div class="stat-label">Total vendedores</div><div class="stat-value" id="statTotal">—</div><div class="stat-sub">en plataforma</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Estado de vendedores</div>
+            <div class="chart-sub">Activos vs inactivos</div>
+            <div class="chart-wrap"><canvas id="chartDona"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Productos por vendedor</div>
+            <div class="chart-sub">Top 10 locales con más productos</div>
+            <div class="chart-wrap"><canvas id="chartBarras"></canvas></div>
+          </div>
+          <div class="chart-card full">
+            <div class="chart-title">Vendedores registrados en el tiempo</div>
+            <div class="chart-sub">Crecimiento acumulado por fecha de registro</div>
+            <div class="chart-wrap tall"><canvas id="chartLinea"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREAR VENDEDOR -->
+      <div class="section" id="sec-crear">
+        <div class="page-header"><h1><span>Panel de administración</span>Crear Vendedor</h1></div>
+        <div class="page-divider"></div>
+        <div class="form-card">
+          <div class="form-header"><h3>Nuevo Vendedor</h3><p>Completa todos los campos para generar las credenciales de acceso</p></div>
+          <div class="form-body">
+            <form id="formCrear">
+              <div class="form-grid">
+                <div class="field"><label>Nombre completo</label><input type="text" id="c-nombre" placeholder="Ej. Juan Pérez" required></div>
+                <div class="field"><label>Nombre del local</label><input type="text" id="c-local" placeholder="Ej. Tacos El Rey" required></div>
+                <div class="field"><label>Username</label><input type="text" id="c-username" placeholder="juanperez" required><span class="field-hint">Con esto iniciará sesión en el panel</span></div>
+                <div class="field"><label>Email</label><input type="email" id="c-email" placeholder="vendedor@email.com" required></div>
+                <div class="field"><label>Contraseña temporal</label><input type="text" id="c-password" placeholder="Mínimo 8 caracteres" required><span class="field-hint">El vendedor debe cambiarla al ingresar</span></div>
+                <div class="field"><label>Teléfono</label><input type="tel" id="c-telefono" placeholder="442-000-0000"></div>
+                <div class="field full"><label>Vendedor ID (UUID FastAPI)</label><input type="text" id="c-vendedor-id" placeholder="3fa85f64-5717-4562-b3fc-2c963f66afa6" required><span class="field-hint">UUID del vendedor registrado en la API de ventas</span></div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>Crear vendedor</button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarForm()">Limpiar</button>
+                <button type="button" class="btn btn-success" onclick="generarPass('c-password')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Generar contraseña</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- VENDEDORES -->
+      <div class="section" id="sec-vendedores">
+        <div class="page-header"><h1><span>Panel de administración</span>Vendedores</h1></div>
+        <div class="page-divider"></div>
+        <div class="tabla-card">
+          <table>
+            <thead><tr><th>Vendedor</th><th>Local</th><th>Dirección</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaVendedores">
+              <tr><td colspan="5"><div class="empty"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No hay vendedores aún</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tabla-footer" style="margin-top:20px;"><span style="font-size:.78rem;color:var(--muted);" id="countVendedores"></span></div>
+      </div>
+
+      <!-- CREDENCIALES -->
+      <div class="section" id="sec-credenciales">
+        <div class="page-header"><h1><span>Panel de administración</span>Credenciales de Vendedores</h1></div>
+        <div class="page-divider"></div>
+
+        <!-- FORM CREAR CREDENCIAL -->
+        <div class="form-card">
+          <div class="form-header">
+            <h3>Crear credenciales</h3>
+            <p>Selecciona un vendedor del listado y asígnale usuario y contraseña</p>
+          </div>
+          <div class="form-body">
+            <form id="formCred" onsubmit="crearCredencial(event)">
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Seleccionar Vendedor</label>
+                  <div class="vd-wrap">
+                    <input class="vd-input" id="vd-display" type="text" placeholder="Escribe para buscar..." autocomplete="off"
+                      oninput="filtrarOpciones(this.value)"
+                      onclick="abrirVD()"
+                      readonly>
+                    <input type="hidden" id="vd-id">
+                    <div class="vd-dropdown" id="vdDropdown"></div>
+                  </div>
+                  <span class="field-hint">El ID se tomará automáticamente del vendedor seleccionado</span>
+                </div>
+                <div class="field">
+                  <label>Username</label>
+                  <input type="text" id="cr-username" placeholder="Mínimo 5 caracteres" required>
+                  <span class="field-hint">Con esto iniciará sesión</span>
+                </div>
+                <div class="field">
+                  <label>Contraseña</label>
+                  <input type="text" id="cr-password" placeholder="Mínimo 6 caracteres" required>
+                  <span class="field-hint">Se guardará encriptada en Supabase</span>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>Crear credenciales</button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarCred()">Limpiar</button>
+                <button type="button" class="btn btn-success" onclick="generarPass('cr-password')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Generar contraseña</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- TABLA CREDENCIALES -->
+        <div class="tabla-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Vendedor / Local</th>
+                <th>Username</th>
+                <th>Contraseña (hash)</th>
+                <th>Creado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCredenciales">
+              <tr><td colspan="5"><div class="empty"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p>No hay credenciales registradas</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SOLICITUDES -->
+      <div class="section" id="sec-solicitudes">
+        <div class="page-header"><h1><span>Panel de administración</span>Solicitudes</h1></div>
+        <div class="page-divider"></div>
+        <div class="tabla-card">
+          <table>
+            <thead><tr><th>Nombre</th><th>Email</th><th>Negocio</th><th>Teléfono</th><th>Fecha</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaSolicitudes">
+              <tr><td colspan="6"><div class="empty"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No hay solicitudes pendientes</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR VENDEDOR -->
+  <div class="modal-overlay" id="modalEliminar">
+    <div class="modal-box">
+      <h3>¿Eliminar vendedor?</h3>
+      <p>Esta acción eliminará al vendedor de la plataforma permanentemente.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalEliminar')">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfirmarEliminar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR CREDENCIAL -->
+  <div class="modal-overlay" id="modalEditarCred">
+    <div class="modal-box">
+      <h3>Editar credenciales</h3>
+      <p>Actualiza el username o la contraseña del vendedor seleccionado</p>
+      <input type="hidden" id="edit-cred-id">
+      <div class="modal-field">
+        <label>Nuevo username</label>
+        <input type="text" id="edit-username" placeholder="Mínimo 5 caracteres">
+      </div>
+      <div class="modal-field">
+        <label>Nueva contraseña</label>
+        <input type="text" id="edit-password" placeholder="Dejar vacío para no cambiar">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalEditarCred')">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarEdicionCred()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR CREDENCIAL -->
+  <div class="modal-overlay" id="modalEliminarCred">
+    <div class="modal-box">
+      <h3>¿Eliminar credenciales?</h3>
+      <p>El vendedor perderá el acceso al panel hasta que se creen nuevas credenciales.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalEliminarCred')">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfEliminarCred">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-custom" id="toast"><span id="toastMsg">Acción completada</span></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ── NAVEGACIÓN ──
+    const secciones = { overview:'sec-overview', crear:'sec-crear', vendedores:'sec-vendedores', credenciales:'sec-credenciales', solicitudes:'sec-solicitudes' };
+    const secKeys   = ['overview','crear','vendedores','credenciales','solicitudes'];
+
+    function showSection(key) {
+      Object.values(secciones).forEach(id => document.getElementById(id).classList.remove('active'));
+      document.querySelectorAll('.nav-side').forEach(n => n.classList.remove('active'));
+      document.getElementById(secciones[key]).classList.add('active');
+      document.querySelectorAll('.nav-side')[secKeys.indexOf(key)].classList.add('active');
+      if (key === 'vendedores')   cargarVendedores();
+      if (key === 'solicitudes')  cargarSolicitudes();
+      if (key === 'credenciales') { cargarCredenciales(); cargarVendedoresDropdown(); }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function generarPass(inputId) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$!';
+      let p = '';
+      for (let i = 0; i < 12; i++) p += chars[Math.floor(Math.random() * chars.length)];
+      document.getElementById(inputId).value = p;
+      showToast('Contraseña generada — cópiala antes de continuar');
+    }
+
+    function limpiarForm() { document.getElementById('formCrear').reset(); }
+    function limpiarCred() {
+      document.getElementById('formCred').reset();
+      document.getElementById('vd-id').value = '';
+      document.getElementById('vd-display').value = '';
+    }
+
+    // ── DROPDOWN VENDEDORES ──
+    let vendedoresList = [];
+
+    async function cargarVendedoresDropdown() {
+      try {
+        vendedoresList = await (await fetch('/admin/vendedores')).json();
+        renderVDOpts(vendedoresList);
+      } catch {}
+    }
+
+    function renderVDOpts(lista) {
+      const dd = document.getElementById('vdDropdown');
+      if (!lista.length) { dd.innerHTML = '<div class="vd-opt"><span class="vd-opt-name">Sin vendedores disponibles</span></div>'; return; }
+      dd.innerHTML = lista.map(v =>
+        `<div class="vd-opt" onclick="elegirVendedor('${v.id}','${(v.nombre_local||v.nombre||'').replace(/'/g,"\\'")}')">
+          <div class="vd-opt-name">${v.nombre_local || v.nombre || '—'}</div>
+          <div class="vd-opt-id">${v.id}</div>
+        </div>`
+      ).join('');
+    }
+
+    function abrirVD() {
+      const dd = document.getElementById('vdDropdown');
+      dd.classList.add('open');
+      document.getElementById('vd-display').readOnly = false;
+    }
+
+    function filtrarOpciones(q) {
+      const filtrados = vendedoresList.filter(v =>
+        (v.nombre_local||'').toLowerCase().includes(q.toLowerCase()) ||
+        (v.nombre||'').toLowerCase().includes(q.toLowerCase())
+      );
+      renderVDOpts(filtrados);
+      document.getElementById('vdDropdown').classList.add('open');
+    }
+
+    function elegirVendedor(id, nombre) {
+      document.getElementById('vd-id').value = id;
+      document.getElementById('vd-display').value = nombre;
+      document.getElementById('vd-display').readOnly = true;
+      document.getElementById('vdDropdown').classList.remove('open');
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.vd-wrap')) document.getElementById('vdDropdown').classList.remove('open');
+    });
+
+    // ── CREAR CREDENCIAL ──
+    async function crearCredencial(e) {
+      e.preventDefault();
+      const vendedor_id = document.getElementById('vd-id').value;
+      const username    = document.getElementById('cr-username').value.trim();
+      const password    = document.getElementById('cr-password').value;
+      if (!vendedor_id) { showToast('Selecciona un vendedor primero'); return; }
+      if (username.length < 5) { showToast('El username debe tener al menos 5 caracteres'); return; }
+      if (password.length < 6) { showToast('La contraseña debe tener al menos 6 caracteres'); return; }
+      try {
+        const res  = await fetch('/admin/credenciales', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vendedor_id, username, password }) });
+        const data = await res.json();
+        if (res.ok) { showToast('Credenciales creadas correctamente'); limpiarCred(); cargarCredenciales(); }
+        else showToast(data.message || 'Error al crear credenciales');
+      } catch { showToast('Error de conexión'); }
+    }
+
+    // ── CARGAR CREDENCIALES ──
+    async function cargarCredenciales() {
+      try {
+        const data  = await (await fetch('/admin/credenciales')).json();
+        const tbody = document.getElementById('tablaCredenciales');
+        if (!data.length) {
+          tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p>No hay credenciales registradas</p></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(c => {
+          const local = c.vendedores ? (c.vendedores.nombre_local || c.vendedores.nombre || '—') : '—';
+          const fecha = c.created_at ? new Date(c.created_at).toLocaleDateString('es-MX') : '—';
+          const hashCorto = c.password ? c.password.substring(0, 20) + '...' : '—';
+          return `<tr>
+            <td>
+              <div style="font-weight:600;font-size:.84rem;">${local}</div>
+              <div style="font-size:.68rem;color:var(--muted);font-family:monospace;margin-top:2px;">${c.vendedor_id}</div>
+            </td>
+            <td style="font-weight:600;">${c.username}</td>
+            <td>
+              <span class="pass-mask" id="pm-${c.id}">••••••••••••</span>
+              <button class="pass-toggle" onclick="toggleHash('${c.id}','${c.password ? c.password.replace(/'/g,"\\'") : ''}')">👁</button>
+            </td>
+            <td style="color:var(--muted);font-size:.78rem;">${fecha}</td>
+            <td>
+              <div class="acciones">
+                <button class="btn-accion warning" onclick="abrirEditarCred('${c.id}','${c.username.replace(/'/g,"\\'")}')">Editar</button>
+                <button class="btn-accion danger"  onclick="abrirEliminarCred('${c.id}')">Eliminar</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch(err) { console.error(err); showToast('Error al cargar credenciales'); }
+    }
+
+    function toggleHash(id, hash) {
+      const el = document.getElementById('pm-' + id);
+      el.textContent = el.textContent.startsWith('•') ? hash.substring(0, 30) + '...' : '••••••••••••';
+    }
+
+    // ── EDITAR CREDENCIAL ──
+    function abrirEditarCred(id, username) {
+      document.getElementById('edit-cred-id').value  = id;
+      document.getElementById('edit-username').value = username;
+      document.getElementById('edit-password').value = '';
+      document.getElementById('modalEditarCred').classList.add('open');
+    }
+
+    async function guardarEdicionCred() {
+      const id       = document.getElementById('edit-cred-id').value;
+      const username = document.getElementById('edit-username').value.trim();
+      const password = document.getElementById('edit-password').value;
+      if (username.length < 5) { showToast('Username debe tener al menos 5 caracteres'); return; }
+      const body = { username };
+      if (password) body.password = password;
+      try {
+        const res = await fetch('/admin/credenciales/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (res.ok) { showToast('Credenciales actualizadas'); cerrarModal('modalEditarCred'); cargarCredenciales(); }
+        else showToast('Error al actualizar');
+      } catch { showToast('Error de conexión'); }
+    }
+
+    // ── ELIMINAR CREDENCIAL ──
+    let pendingDeleteCredId = null;
+
+    function abrirEliminarCred(id) {
+      pendingDeleteCredId = id;
+      document.getElementById('modalEliminarCred').classList.add('open');
+    }
+
+    document.getElementById('btnConfEliminarCred').addEventListener('click', async () => {
+      if (!pendingDeleteCredId) return;
+      const res = await fetch('/admin/credenciales/' + pendingDeleteCredId, { method: 'DELETE' });
+      if (res.ok) { showToast('Credenciales eliminadas'); cerrarModal('modalEliminarCred'); cargarCredenciales(); }
+      else showToast('Error al eliminar');
+      pendingDeleteCredId = null;
+    });
+
+    // ── CREAR VENDEDOR ──
+    document.getElementById('formCrear').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const datos = { nombre: document.getElementById('c-nombre').value.trim(), username: document.getElementById('c-username').value.trim(), email: document.getElementById('c-email').value.trim(), password: document.getElementById('c-password').value, telefono: document.getElementById('c-telefono').value.trim(), vendedor_id: document.getElementById('c-vendedor-id').value.trim(), local: document.getElementById('c-local').value.trim() };
+      try {
+        const res = await fetch('/admin/vendedores', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(datos) });
+        const data = await res.json();
+        if (res.ok) { showToast('Vendedor "' + datos.username + '" creado correctamente'); limpiarForm(); cargarStats(); }
+        else showToast(data.message || 'Error al crear vendedor');
+      } catch { showToast('Error de conexión'); }
+    });
+
+    // ── CARGAR VENDEDORES ──
+    let pendingDeleteId = null;
+    function abrirModalEliminar(id) { pendingDeleteId = id; document.getElementById('modalEliminar').classList.add('open'); }
+
+    async function cargarVendedores() {
+      try {
+        const data = await (await fetch('/admin/vendedores')).json();
+        const tbody = document.getElementById('tablaVendedores');
+        document.getElementById('countVendedores').textContent = data.length + ' vendedor' + (data.length !== 1 ? 'es' : '') + ' registrado' + (data.length !== 1 ? 's' : '');
+        if (!data.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No hay vendedores aún</p></div></td></tr>'; return; }
+        tbody.innerHTML = data.map(v => {
+          const ini = (v.nombre || v.nombre_local || '?')[0].toUpperCase();
+          return '<tr>' +
+            '<td><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:8px;background:#f0f5ff;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:Syne,sans-serif;font-size:13px;flex-shrink:0;">' + ini + '</div>' +
+            '<div><div style="font-weight:600;font-size:.84rem;">' + (v.nombre||'—') + '</div><div style="font-size:.72rem;color:var(--muted);">' + (v.email||'—') + '</div></div></div></td>' +
+            '<td style="font-weight:600;font-size:.84rem;">' + (v.nombre_local||'—') + '</td>' +
+            '<td style="color:var(--muted);font-size:.84rem;">' + (v.direccion||'—') + '</td>' +
+            '<td><span class="rol-badge ' + (v.is_activated ? 'badge-activo' : 'badge-inactivo') + '">' + (v.is_activated ? 'Activo' : 'Inactivo') + '</span></td>' +
+            '<td><div class="acciones"><button class="btn-accion danger" onclick="abrirModalEliminar(\'' + v.id + '\')">Eliminar</button></div></td></tr>';
+        }).join('');
+      } catch { showToast('Error al cargar vendedores'); }
+    }
+
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async () => {
+      if (!pendingDeleteId) return;
+      const res = await fetch('/admin/vendedores/' + pendingDeleteId, { method: 'DELETE' });
+      if (res.ok) { showToast('Vendedor eliminado'); cerrarModal('modalEliminar'); cargarVendedores(); cargarStats(); }
+      else showToast('Error al eliminar');
+      pendingDeleteId = null;
+    });
+
+    // ── SOLICITUDES ──
+    async function cargarSolicitudes() {
+      try {
+        const data = await (await fetch('/admin/solicitudes')).json();
+        const tbody = document.getElementById('tablaSolicitudes');
+        document.getElementById('badgeCount').textContent = data.length;
+        if (!data.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No hay solicitudes pendientes</p></div></td></tr>'; return; }
+        tbody.innerHTML = data.map(s =>
+          '<tr><td style="font-weight:600;">' + s.nombre + '</td><td style="color:var(--muted);font-size:.84rem;">' + s.email + '</td><td>' + s.negocio + '</td><td style="color:var(--muted);font-size:.84rem;">' + (s.telefono||'—') + '</td><td style="color:var(--muted);font-size:.78rem;">' + new Date(s.createdAt).toLocaleDateString('es-MX') + '</td><td><div class="acciones"><button class="btn-accion success" onclick="aprobarSolicitud(\'' + s._id + '\')">Aprobar</button><button class="btn-accion danger" onclick="rechazarSolicitud(\'' + s._id + '\')">Rechazar</button></div></td></tr>'
+        ).join('');
+      } catch { showToast('Error al cargar solicitudes'); }
+    }
+
+    async function aprobarSolicitud(id) { await fetch('/admin/solicitudes/' + id + '/aprobar', { method: 'POST' }); showToast('Solicitud aprobada'); cargarSolicitudes(); showSection('crear'); }
+    async function rechazarSolicitud(id) { await fetch('/admin/solicitudes/' + id + '/rechazar', { method: 'POST' }); showToast('Solicitud rechazada'); cargarSolicitudes(); }
+
+    // ── STATS + GRÁFICAS ──
+    let chartDona, chartBarras, chartLinea;
+
+    async function cargarStats() {
+      try {
+        const [vendedores, solicitudes] = await Promise.all([fetch('/admin/vendedores').then(r => r.json()), fetch('/admin/solicitudes').then(r => r.json())]);
+        const activos   = vendedores.filter(v => v.is_activated).length;
+        const inactivos = vendedores.filter(v => !v.is_activated).length;
+        document.getElementById('statActivos').textContent     = activos;
+        document.getElementById('statInactivos').textContent   = inactivos;
+        document.getElementById('statSolicitudes').textContent = solicitudes.length;
+        document.getElementById('statTotal').textContent       = vendedores.length;
+        document.getElementById('badgeCount').textContent      = solicitudes.length;
+        renderDona(activos, inactivos);
+        renderBarras(vendedores);
+        renderLinea(vendedores);
+      } catch(e) { console.error(e); }
+    }
+
+    function renderDona(a, i) {
+      const ctx = document.getElementById('chartDona').getContext('2d');
+      if (chartDona) chartDona.destroy();
+      chartDona = new Chart(ctx, { type:'doughnut', data:{ labels:['Activos','Inactivos'], datasets:[{ data:[a,i], backgroundColor:['#0057FF','#ef4444'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{ family:'DM Sans', size:12 }, padding:16 } } }, cutout:'65%' } });
+    }
+
+    function renderBarras(vs) {
+      const ctx = document.getElementById('chartBarras').getContext('2d');
+      if (chartBarras) chartBarras.destroy();
+      const top = vs.slice(0,10);
+      chartBarras = new Chart(ctx, { type:'bar', data:{ labels:top.map(v => v.nombre_local||v.nombre||'—'), datasets:[{ label:'Productos', data:top.map(v => v.quantity_products||0), backgroundColor:'#0057FF22', borderColor:'#0057FF', borderWidth:2, borderRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ font:{ family:'DM Sans', size:11 }, maxRotation:30 }, grid:{ display:false } }, y:{ ticks:{ font:{ family:'DM Sans', size:11 } }, grid:{ color:'#f0f0f0' }, beginAtZero:true } } } });
+    }
+
+    function renderLinea(vs) {
+      const ctx = document.getElementById('chartLinea').getContext('2d');
+      if (chartLinea) chartLinea.destroy();
+      const pf = {};
+      vs.forEach(v => { const f = v.created_at ? new Date(v.created_at).toLocaleDateString('es-MX',{ month:'short', day:'numeric' }) : 'Sin fecha'; pf[f] = (pf[f]||0)+1; });
+      let a = 0;
+      const vals = Object.values(pf).map(n => { a += n; return a; });
+      chartLinea = new Chart(ctx, { type:'line', data:{ labels:Object.keys(pf), datasets:[{ label:'Acumulados', data:vals, borderColor:'#0057FF', backgroundColor:'#0057FF11', borderWidth:2, pointBackgroundColor:'#0057FF', pointRadius:4, fill:true, tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ font:{ family:'DM Sans', size:11 } }, grid:{ display:false } }, y:{ ticks:{ font:{ family:'DM Sans', size:11 }, stepSize:1 }, grid:{ color:'#f0f0f0' }, beginAtZero:true } } } });
+    }
+
+    cargarStats();
+    cargarSolicitudes();
+  </script>
+</body>
+</html>

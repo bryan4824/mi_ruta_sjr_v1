@@ -1,0 +1,40 @@
+{
+  "name": "mi-ruta-sjr",
+  "version": "1.0.0",
+  "description": "* El proyecto debe estar hecho con NodeJS y cumplir con las siguientes características *",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "node": "nodemon index.js",
+    "fastapi": "cd ../ventas-api && venv\\Scripts\\python -m uvicorn app.main:app --reload",
+    "dev": "concurrently \"npm run node\" \"npm run fastapi\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "crypto": "^1.0.1",
+    "db-local": "^3.1.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "git-filter-repo": "^0.0.30",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "dependency-cruiser": "^17.3.8",
+    "nodemon": "^3.1.10",
+    "standard": "^17.1.2"
+  },
+  "eslintConfig": {
+    "extends": "standard"
+  }
+}

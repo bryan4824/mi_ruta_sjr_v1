@@ -1,0 +1,240 @@
+/* ══════════════════════════════════
+   VARIABLES
+══════════════════════════════════ */
+:root {
+  --bg: #F5F4F0;
+  --surface: #fff;
+  --text: #111;
+  --muted: #888;
+  --border: #e8e8e8;
+  --yellow: #FFC914;
+  --yellow-dk: #E6A800;
+  --accent: #E8193C;
+  --card-radius: 20px;
+}
+
+/* ══════════════════════════════════
+   BASE
+══════════════════════════════════ */
+body {
+  background: var(--bg) !important;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+/* ══════════════════════════════════
+   HERO BANNER — mismo amarillo del home
+══════════════════════════════════ */
+.contacto-hero {
+  background: var(--yellow);
+  padding: 56px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* burbujas decorativas igual que el home */
+.contacto-hero .burbuja {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+.burbuja-1 { width: 220px; height: 220px; top: -70px; right: 8%;  }
+.burbuja-2 { width: 80px;  height: 80px;  bottom: 30px; left: 6%; }
+.burbuja-3 { width: 40px;  height: 40px;  top: 40px; left: 30%;   }
+
+.hero-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+
+.hero-inner h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.hero-inner p {
+  font-size: 0.92rem;
+  color: rgba(0,0,0,0.5);
+  line-height: 1.7;
+  max-width: 400px;
+}
+
+/* franja dorada igual que el home */
+.hero-stripe {
+  height: 10px;
+  background: var(--yellow-dk);
+}
+
+/* ══════════════════════════════════
+   WRAPPER — sube sobre el hero
+══════════════════════════════════ */
+.contacto-wrapper {
+  max-width: 640px;
+  margin: -36px auto 72px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════
+   CARD
+══════════════════════════════════ */
+.contacto-card {
+  background: var(--surface);
+  border-radius: var(--card-radius);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  animation: cardIn 0.4s ease both;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+}
+
+.contacto-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--yellow);
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+
+/* ══════════════════════════════════
+   FORM
+══════════════════════════════════ */
+.form-body {
+  padding: 32px 32px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-label {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted) !important;
+}
+
+.form-control {
+  border: 1.5px solid var(--border) !important;
+  border-radius: 12px !important;
+  padding: 11px 16px !important;
+  font-size: 0.88rem !important;
+  font-family: 'DM Sans', sans-serif;
+  background: #fafafa !important;
+  color: var(--text) !important;
+  transition: border-color 0.2s, background 0.2s;
+  box-shadow: none !important;
+}
+
+.form-control:focus {
+  border-color: var(--yellow-dk) !important;
+  background: #fff !important;
+  outline: none !important;
+}
+
+.form-control::placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+
+textarea.form-control {
+  resize: none;
+  min-height: 120px;
+}
+
+/* ══════════════════════════════════
+   CARD FOOTER
+══════════════════════════════════ */
+.card-foot {
+  padding: 20px 32px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.card-foot .hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.btn-enviar {
+  background: var(--yellow);
+  color: var(--text);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 13px 28px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-enviar:hover {
+  transform: translateY(-2px);
+  background: var(--yellow-dk);
+}
+
+/* ══════════════════════════════════
+   ANIMACIÓN
+══════════════════════════════════ */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media (max-width: 560px) {
+  .contacto-hero { padding: 40px 20px 60px; }
+  .contacto-wrapper { padding: 0 16px; }
+  .form-body { padding: 24px 20px 8px; }
+  .card-foot { flex-direction: column; align-items: stretch; padding: 16px 20px 24px; }
+  .btn-enviar { text-align: center; }
+  .field-row { grid-template-columns: 1fr; }
+}

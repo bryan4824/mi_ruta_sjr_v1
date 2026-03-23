@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos — <%= nombre_vendedor %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
+      --burnt: #DE7A22; --burnt-claro: #FEF0E3;
+      --lagoon: #6AB187; --lagoon-claro: #EDF6F0;
+      --sand: #F4CC70; --sand-claro: #FEF8E7;
+      --fondo: #F5F5F3; --blanco: #ffffff;
+      --texto: #222; --suave: #888; --borde: #E8E8E4;
+      --accent: var(--sea);
+    }
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: var(--sea); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-left { display: flex; align-items: center; gap: 14px; }
+    .back-btn { display: flex; align-items: center; gap: 6px; color: #fff; text-decoration: none; font-size: 13px; font-weight: 600; opacity: 0.85; transition: opacity 0.15s; }
+    .back-btn:hover { opacity: 1; }
+    .back-btn svg { width: 16px; height: 16px; stroke: #fff; fill: none; }
+    .nav-title { color: #fff; font-size: 15px; font-weight: 700; }
+    .nav-count { background: rgba(255,255,255,0.2); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+
+    /* HERO STRIP */
+    .hero-strip { background: var(--blanco); border-bottom: 1.5px solid var(--borde); padding: 18px 24px; display: flex; align-items: center; gap: 16px; }
+    .hero-avatar { width: 52px; height: 52px; background: var(--sea); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .hero-info h1 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+    .hero-info p { font-size: 13px; color: var(--suave); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--lagoon-claro); color: #2D6644; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
+
+    /* LAYOUT */
+    .layout { max-width: 1280px; margin: 0 auto; padding: 20px 20px 60px; display: grid; grid-template-columns: 240px 1fr; gap: 20px; }
+
+    /* SIDEBAR FILTROS */
+    .filters { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 14px; padding: 20px; position: sticky; top: 76px; height: fit-content; }
+    .filter-title { font-size: 13px; font-weight: 800; color: var(--texto); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .filter-title svg { width: 14px; height: 14px; stroke: var(--sea); fill: none; }
+    .filter-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1.5px solid var(--borde); }
+    .filter-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .filter-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--suave); margin-bottom: 10px; display: block; }
+    .filter-options { display: flex; flex-direction: column; gap: 6px; }
+    .filter-opt { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--texto); padding: 6px 8px; border-radius: 8px; transition: background 0.12s; }
+    .filter-opt:hover { background: var(--fondo); }
+    .filter-opt input[type="radio"], .filter-opt input[type="checkbox"] { accent-color: var(--sea); width: 14px; height: 14px; cursor: pointer; }
+    .filter-opt.active { background: var(--sea-claro); color: var(--sea); font-weight: 600; }
+    .price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .price-input { background: var(--fondo); border: 1.5px solid var(--borde); border-radius: 8px; padding: 7px 10px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--texto); outline: none; width: 100%; transition: border-color 0.15s; }
+    .price-input:focus { border-color: var(--sea); }
+    .btn-filtrar { width: 100%; background: var(--sea); color: #fff; border: none; border-radius: 10px; padding: 9px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: filter 0.15s; }
+    .btn-filtrar:hover { filter: brightness(0.9); }
+    .btn-limpiar { width: 100%; background: none; color: var(--suave); border: 1.5px solid var(--borde); border-radius: 10px; padding: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; cursor: pointer; margin-top: 6px; transition: border-color 0.15s; }
+    .btn-limpiar:hover { border-color: var(--texto); color: var(--texto); }
+
+    /* CONTENIDO */
+    .content {}
+    .content-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .result-count { font-size: 14px; color: var(--suave); }
+    .result-count strong { color: var(--texto); }
+    .sort-select { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 10px; padding: 7px 12px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--texto); outline: none; cursor: pointer; }
+    .sort-select:focus { border-color: var(--sea); }
+
+    /* CHIPS ACTIVOS */
+    .active-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .chip-filter { display: inline-flex; align-items: center; gap: 6px; background: var(--sea-claro); color: var(--sea); border: 1.5px solid var(--sea-borde); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .chip-filter button { background: none; border: none; cursor: pointer; color: var(--sea); font-size: 14px; line-height: 1; padding: 0; }
+
+    /* GRID PRODUCTOS */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+
+    .pcard { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 14px; overflow: hidden; text-decoration: none; color: var(--texto); display: block; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; animation: entrar 0.3s ease both; }
+    .pcard:hover { transform: translateY(-3px); border-color: var(--sea); box-shadow: 0 6px 20px rgba(32,148,139,0.12); }
+    @keyframes entrar { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+    /* IMAGEN / PLACEHOLDER */
+    .pcard-img { height: 160px; background: var(--fondo); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .pcard-initial { font-size: 64px; font-weight: 800; color: var(--borde); line-height: 1; user-select: none; }
+    .pcard-badge { position: absolute; top: 10px; left: 10px; background: #22c55e; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+    .pcard-badge.agotado { background: #ef4444; }
+    .pcard-badge.bajo { background: var(--burnt); }
+    .pcard-domicilio { position: absolute; top: 10px; right: 10px; background: var(--lagoon-claro); color: #2D6644; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--lagoon); }
+
+    /* BODY */
+    .pcard-body { padding: 14px 16px 16px; }
+    .pcard-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pcard-desc { font-size: 12px; color: var(--suave); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .pcard-precio-wrap { margin-bottom: 10px; }
+    .pcard-precio { font-size: 22px; font-weight: 800; color: var(--texto); }
+    .pcard-original { font-size: 12px; color: var(--suave); text-decoration: line-through; margin-right: 6px; }
+    .pcard-descuento { font-size: 12px; font-weight: 700; color: #22c55e; }
+
+    .pcard-divider { height: 1px; background: var(--borde); margin: 10px 0; }
+
+    .pcard-meta { display: flex; flex-direction: column; gap: 5px; }
+    .meta-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+    .meta-key { color: var(--suave); display: flex; align-items: center; gap: 5px; }
+    .meta-key svg { width: 11px; height: 11px; stroke: var(--sea); fill: none; }
+    .meta-val { font-weight: 600; color: var(--texto); }
+
+    .pcard-footer { padding: 10px 16px; border-top: 1px solid var(--borde); display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+    .pcard-pago { color: var(--suave); display: flex; align-items: center; gap: 4px; }
+    .pcard-pago svg { width: 11px; height: 11px; stroke: var(--suave); fill: none; }
+    .pcard-ver { color: var(--sea); font-weight: 700; display: flex; align-items: center; gap: 3px; }
+    .pcard-ver svg { width: 11px; height: 11px; stroke: var(--sea); fill: none; }
+
+    /* EMPTY */
+    .empty { grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--suave); }
+    .empty svg { width: 48px; height: 48px; stroke: #ddd; fill: none; display: block; margin: 0 auto 12px; }
+    .empty p { font-size: 15px; }
+
+    /* NO RESULTS */
+    .no-results { text-align: center; padding: 60px 20px; color: var(--suave); grid-column: 1/-1; }
+
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .filters { position: static; } }
+    @media (max-width: 500px) { .grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a class="back-btn" href="/locales">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+        Locales
+      </a>
+      <span class="nav-title"><%= nombre_vendedor %></span>
+    </div>
+    <span class="nav-count"><%= productos.length %> productos</span>
+  </nav>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <div class="hero-avatar"><%= nombre_vendedor ? nombre_vendedor.charAt(0).toUpperCase() : 'L' %></div>
+    <div class="hero-info">
+      <h1><%= nombre_vendedor %></h1>
+      <p><%= productos.length %> productos disponibles</p>
+      <span class="hero-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Local verificado
+      </span>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- FILTROS -->
+    <aside class="filters">
+      <div class="filter-title">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtros
+      </div>
+
+      <!-- DOMICILIO -->
+      <div class="filter-section">
+        <span class="filter-label">Envío a domicilio</span>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="radio" name="domicilio" value="todos" checked onchange="aplicarFiltros()"> Todos</label>
+          <label class="filter-opt"><input type="radio" name="domicilio" value="si" onchange="aplicarFiltros()"> Con domicilio</label>
+          <label class="filter-opt"><input type="radio" name="domicilio" value="no" onchange="aplicarFiltros()"> Sin domicilio</label>
+        </div>
+      </div>
+
+      <!-- PRECIO -->
+      <div class="filter-section">
+        <span class="filter-label">Precio</span>
+        <div class="price-inputs">
+          <input class="price-input" type="number" id="precioMin" placeholder="Mín $" min="0">
+          <input class="price-input" type="number" id="precioMax" placeholder="Máx $" min="0">
+        </div>
+        <button class="btn-filtrar" onclick="aplicarFiltros()">Aplicar</button>
+        <button class="btn-limpiar" onclick="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+
+      <!-- STOCK -->
+      <div class="filter-section">
+        <span class="filter-label">Disponibilidad</span>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="radio" name="stock" value="todos" checked onchange="aplicarFiltros()"> Todos</label>
+          <label class="filter-opt"><input type="radio" name="stock" value="disponible" onchange="aplicarFiltros()"> Con stock</label>
+          <label class="filter-opt"><input type="radio" name="stock" value="agotado" onchange="aplicarFiltros()"> Agotados</label>
+        </div>
+      </div>
+
+      <!-- DESCUENTO -->
+      <div class="filter-section">
+        <span class="filter-label">Descuento</span>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="radio" name="desc" value="todos" checked onchange="aplicarFiltros()"> Todos</label>
+          <label class="filter-opt"><input type="radio" name="desc" value="con" onchange="aplicarFiltros()"> Con descuento</label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <div class="content">
+      <div class="content-top">
+        <div class="result-count"><strong id="countVisible"><%= productos.length %></strong> resultados</div>
+        <select class="sort-select" id="sortSelect" onchange="aplicarFiltros()">
+          <option value="default">Más relevantes</option>
+          <option value="precio-asc">Precio: menor a mayor</option>
+          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="stock-desc">Mayor stock</option>
+          <option value="nombre-asc">Nombre A-Z</option>
+        </select>
+      </div>
+
+      <div class="active-filters" id="activeFilters"></div>
+
+      <div class="grid" id="gridProductos">
+        <% if (productos.length > 0) { %>
+          <% productos.forEach((p, i) => { %>
+            <%
+              var precioFinal = p.precio || 0;
+              var tieneDesc   = p.descuento && p.descuento > 0;
+              var precioOrig  = tieneDesc ? (precioFinal / (1 - p.descuento / 100)) : 0;
+              var stockStatus = p.quantity <= 0 ? 'agotado' : p.quantity <= p.min_stock ? 'bajo' : 'ok';
+              var delay       = (i * 0.04).toFixed(2);
+            %>
+            <a href="/locales/<%= vendedor_id %>/productos/<%= p.id %>"
+               class="pcard"
+               style="animation-delay:<%= delay %>s"
+               data-precio="<%= precioFinal %>"
+               data-stock="<%= p.quantity %>"
+               data-domicilio="<%= p.servicio_a_domicilio ? 'si' : 'no' %>"
+               data-descuento="<%= tieneDesc ? 'con' : 'sin' %>"
+               data-nombre="<%= (p.name || '').toLowerCase() %>">
+
+              <!-- IMAGEN -->
+              <div class="pcard-img">
+                <span class="pcard-initial"><%= (p.name || 'P')[0].toUpperCase() %></span>
+                <% if (stockStatus === 'agotado') { %>
+                  <span class="pcard-badge agotado">Agotado</span>
+                <% } else if (stockStatus === 'bajo') { %>
+                  <span class="pcard-badge bajo">Pocas unidades</span>
+                <% } else { %>
+                  <span class="pcard-badge">Disponible</span>
+                <% } %>
+                <% if (p.servicio_a_domicilio) { %>
+                  <span class="pcard-domicilio">🛵 Domicilio</span>
+                <% } %>
+              </div>
+
+              <!-- BODY -->
+              <div class="pcard-body">
+                <div class="pcard-name"><%= p.name %></div>
+                <% if (p.descripcion) { %>
+                  <div class="pcard-desc"><%= p.descripcion %></div>
+                <% } %>
+
+                <div class="pcard-precio-wrap">
+                  <% if (tieneDesc) { %>
+                    <div style="display:flex;align-items:baseline;gap:6px;">
+                      <span class="pcard-precio">$<%= precioFinal.toFixed(2) %></span>
+                      <span class="pcard-descuento">-<%= p.descuento %>%</span>
+                    </div>
+                    <div><span class="pcard-original">$<%= precioOrig.toFixed(2) %></span></div>
+                  <% } else { %>
+                    <span class="pcard-precio">$<%= precioFinal.toFixed(2) %></span>
+                  <% } %>
+                </div>
+
+                <div class="pcard-divider"></div>
+
+                <div class="pcard-meta">
+                  <div class="meta-row">
+                    <span class="meta-key">
+                      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+                      Stock
+                    </span>
+                    <span class="meta-val"><%= p.quantity %> uds.</span>
+                  </div>
+                  <% if (p.tipo_de_pago) { %>
+                  <div class="meta-row">
+                    <span class="meta-key">
+                      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      Pago
+                    </span>
+                    <span class="meta-val"><%= p.tipo_de_pago %></span>
+                  </div>
+                  <% } %>
+                  <% if (p.ubicacion_exacta) { %>
+                  <div class="meta-row">
+                    <span class="meta-key">
+                      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      Ubicación
+                    </span>
+                    <span class="meta-val" style="font-size:11px;max-width:100px;text-align:right;"><%= p.ubicacion_exacta %></span>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+
+              <div class="pcard-footer">
+                <span class="pcard-pago">
+                  <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  <%= p.tipo_de_pago || 'Consultar' %>
+                </span>
+                <span class="pcard-ver">
+                  Ver más
+                  <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                </span>
+              </div>
+            </a>
+          <% }) %>
+        <% } else { %>
+          <div class="empty">
+            <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <p>Este local no tiene productos registrados.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cards = Array.from(document.querySelectorAll('.pcard'));
+
+    function getVal(id) { return document.getElementById(id)?.value || ''; }
+    function getRadio(name) { return document.querySelector(`input[name="${name}"]:checked`)?.value || 'todos'; }
+
+    function aplicarFiltros() {
+      const domicilio = getRadio('domicilio');
+      const stock     = getRadio('stock');
+      const desc      = getRadio('desc');
+      const precioMin = parseFloat(getVal('precioMin')) || 0;
+      const precioMax = parseFloat(getVal('precioMax')) || Infinity;
+      const sort      = getVal('sortSelect');
+
+      let visibles = cards.filter(c => {
+        const precio   = parseFloat(c.dataset.precio) || 0;
+        const stockVal = parseInt(c.dataset.stock) || 0;
+        const dom      = c.dataset.domicilio;
+        const desVal   = c.dataset.descuento;
+
+        if (domicilio !== 'todos' && dom !== domicilio) return false;
+        if (stock === 'disponible' && stockVal <= 0) return false;
+        if (stock === 'agotado'    && stockVal > 0)  return false;
+        if (desc === 'con'         && desVal !== 'con') return false;
+        if (precio < precioMin || precio > precioMax) return false;
+        return true;
+      });
+
+      // Ordenar
+      visibles.sort((a, b) => {
+        const pa = parseFloat(a.dataset.precio) || 0;
+        const pb = parseFloat(b.dataset.precio) || 0;
+        const sa = parseInt(a.dataset.stock) || 0;
+        const sb = parseInt(b.dataset.stock) || 0;
+        if (sort === 'precio-asc')  return pa - pb;
+        if (sort === 'precio-desc') return pb - pa;
+        if (sort === 'stock-desc')  return sb - sa;
+        if (sort === 'nombre-asc')  return (a.dataset.nombre||'').localeCompare(b.dataset.nombre||'');
+        return 0;
+      });
+
+      const grid = document.getElementById('gridProductos');
+
+      // Ocultar todos
+      cards.forEach(c => c.style.display = 'none');
+
+      // Mostrar visibles en orden
+      if (visibles.length === 0) {
+        grid.innerHTML = '<div class="no-results"><p>No hay productos con esos filtros.</p></div>';
+      } else {
+        // Remover no-results si existe
+        const nr = grid.querySelector('.no-results');
+        if (nr) nr.remove();
+        visibles.forEach((c, i) => {
+          c.style.display = 'block';
+          c.style.animationDelay = (i * 0.03) + 's';
+          grid.appendChild(c);
+        });
+      }
+
+      document.getElementById('countVisible').textContent = visibles.length;
+      renderChips(domicilio, stock, desc, precioMin, precioMax);
+    }
+
+    function renderChips(domicilio, stock, desc, pMin, pMax) {
+      const wrap = document.getElementById('activeFilters');
+      wrap.innerHTML = '';
+      if (domicilio !== 'todos') addChip(wrap, domicilio === 'si' ? 'Con domicilio' : 'Sin domicilio', () => { document.querySelector('input[name="domicilio"][value="todos"]').checked = true; aplicarFiltros(); });
+      if (stock !== 'todos') addChip(wrap, stock === 'disponible' ? 'Con stock' : 'Agotados', () => { document.querySelector('input[name="stock"][value="todos"]').checked = true; aplicarFiltros(); });
+      if (desc !== 'todos') addChip(wrap, 'Con descuento', () => { document.querySelector('input[name="desc"][value="todos"]').checked = true; aplicarFiltros(); });
+      if (pMin > 0) addChip(wrap, `Mín $${pMin}`, () => { document.getElementById('precioMin').value = ''; aplicarFiltros(); });
+      if (pMax < Infinity) addChip(wrap, `Máx $${pMax}`, () => { document.getElementById('precioMax').value = ''; aplicarFiltros(); });
+    }
+
+    function addChip(wrap, text, onRemove) {
+      const chip = document.createElement('span');
+      chip.className = 'chip-filter';
+      chip.innerHTML = text + '<button onclick="void(0)">×</button>';
+      chip.querySelector('button').addEventListener('click', onRemove);
+      wrap.appendChild(chip);
+    }
+
+    function limpiarFiltros() {
+      document.querySelector('input[name="domicilio"][value="todos"]').checked = true;
+      document.querySelector('input[name="stock"][value="todos"]').checked = true;
+      document.querySelector('input[name="desc"][value="todos"]').checked = true;
+      document.getElementById('precioMin').value = '';
+      document.getElementById('precioMax').value = '';
+      document.getElementById('sortSelect').value = 'default';
+      aplicarFiltros();
+    }
+  </script>
+
+</body>
+</html>

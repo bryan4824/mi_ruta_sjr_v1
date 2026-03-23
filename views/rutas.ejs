@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Rutas · Mi Ruta SJR</title>
+
+  <!-- Bootstrap CSS PRIMERO — un solo link, el más reciente -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+
+  <link rel="stylesheet" href="css/style_rutas.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <!--  NO cargar popper por separado cuando se usa el bundle de Bootstrap -->
+
+</head>
+</head>
+<body   >
+
+
+<!-- ══ NAVBAR ══════════════════════════════════════════════
+     Bootstrap bundle se carga AL FINAL del body — por eso
+     el dropdown funciona correctamente.
+     Aquí solo va el CSS, nunca el JS inline.
+══════════════════════════════════════════════════════════ -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand me-2" href="#">
+        <img src="/image/logo_sin_fondo.png" height="40" alt="Logo" style="margin-top: -1px;" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contacto">Contacto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Sobre Nosotros</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/registro_vendedor">Quiero vender</a>
+          </li>
+
+        </ul>
+        <div class="d-flex align-items-center">
+          <% if (user) { %>
+            <span class="me-3">Hola, <%= user.username %></span>
+
+            <!-- <button type="button" class="btn btn-warning" id="logout-btn">Cerrar Sesión</button> -->
+            <!-- MENÚ HAMBURGUESA PERSONAL -->
+            <div class="dropdown ms-3">
+              <button class="btn btn-light border rounded-circle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-list" style="font-size:22px;"></i>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person"></i> Ver perfil</a></li>
+                <li><a class="dropdown-item" href="/configuracion"><i class="bi bi-gear"></i> Configuración</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><button class="dropdown-item text-danger" id="logout-btn">
+                    <i class="bi bi-box-arrow-right" ></i> Cerrar sesión
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <% } else { %>
+              <a class="btn btn-primary" href="/login">Iniciar Sesión</a>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="header">
+    <div class="header-left">
+      <h1>
+        <span>Transporte Público</span>
+        Rutas SJR
+      </h1>
+      <div class="pill-sjr">San Juan del Río</div>
+    </div>
+    <div class="header-right">
+      8 rutas disponibles<br>
+      Tarifa estándar municipal
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <!-- BUSCADOR DE RUTAS -->
+  <div style="max-width:520px;margin:24px auto 28px;padding:0 20px;">
+    <div style="background:#fff;border:1.5px solid #E8E8E2;border-radius:12px;padding:20px 22px;">
+      <label style="font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#888;display:block;margin-bottom:10px;">
+        Buscar ruta por número
+      </label>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:8px;background:#F5F4F0;border:1.5px solid #E8E8E2;border-radius:8px;padding:10px 14px;flex:1;" id="searchWrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input
+            type="number"
+            id="inputRuta"
+            placeholder="Ej. 7, 2, 10..."
+            min="1" max="99"
+            oninput="filtrarRuta(this.value)"
+            onfocus="document.getElementById('searchWrap').style.borderColor='#20948B'"
+            onblur="document.getElementById('searchWrap').style.borderColor='#E8E8E2'"
+            style="background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:700;color:#111;width:100%;">
+        </div>
+        <button onclick="limpiarBusqueda()" style="background:#F5F4F0;border:1.5px solid #E8E8E2;border-radius:8px;padding:10px 14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:#555;">
+          Limpiar
+        </button>
+      </div>
+      <!-- AVISO -->
+      <div style="display:flex;align-items:center;gap:7px;margin-top:10px;background:#FEF8E7;border:1px solid #F0E0A0;border-radius:8px;padding:8px 12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7A5800" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span style="font-size:12px;color:#7A5800;font-weight:600;">Solo ingresa el número de la ruta (ej. 7, 2, 10, 23)</span>
+      </div>
+      <!-- SIN RESULTADOS -->
+      <div id="sinResultados" style="display:none;margin-top:10px;text-align:center;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;">
+        <span style="font-size:13px;color:#B91C1C;font-weight:600;">No existe la ruta <span id="numBuscado"></span> — intenta con otro número</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Ruta 7 -->
+    <div class="card" style="--accent: var(--c1);">
+      <div class="card-bg-num">7</div>
+      <button class="fav" onclick="toggleFav(this)" title="Favorita">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">7</div>
+      <h3>Ruta 7</h3>
+      <p class="route-sub">Inicia → La Mora</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Terminal de Autobuses
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          35 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 12 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1akCTFZR1TTdG4ty6IqsG_DndQh6pzrg&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 2 -->
+    <div class="card" style="--accent: var(--c2);">
+      <div class="card-bg-num">2</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">2</div>
+      <h3>Ruta 2</h3>
+      <p class="route-sub">Calle Galeana → La Palama</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Termina → La Palama
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1z1DTLutRmdlh66OIwS8NEuuIAZCAJDE&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 10 -->
+    <div class="card" style="--accent: var(--c3);">
+      <div class="card-bg-num">10</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">10</div>
+      <h3>Ruta 10</h3>
+      <p class="route-sub">Camino Real Cerro Gordo → Terminal</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Termina → Terminal de Autobuses
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1EGC2hLRUNrC9YwcKZHZfIXkkXMJUF9M&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 23 -->
+    <div class="card" style="--accent: var(--c4);">
+      <div class="card-bg-num">23</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">23</div>
+      <h3>Ruta 23</h3>
+      <p class="route-sub">Lomas del Pedregal → 5 de Mayo</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Termina → 5 de Mayo
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1zIIqvb6HsLC1ii9lYCNV6FD1HN6vsYw&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 4 -->
+    <div class="card" style="--accent: var(--c5);">
+      <div class="card-bg-num">4</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">4</div>
+      <h3>Ruta 4</h3>
+      <p class="route-sub">Oriente 2 Nuevo San Juan → 5 de Mayo</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Inicia → 5 de Mayo
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1Jr_HJ4v9_WpOZgH-rQo5RUBq94LUGzA&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 20 -->
+    <div class="card" style="--accent: var(--c6);">
+      <div class="card-bg-num">20</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">20</div>
+      <h3>Ruta 20</h3>
+      <p class="route-sub">Terminal → La Laguna</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Mercado · Av. Hidalgo · Parque Industrial
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1kdEZPC76M38ff0RBgZrpQc8da3pAJiI&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 16 -->
+    <div class="card" style="--accent: var(--c7);">
+      <div class="card-bg-num">16</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">16</div>
+      <h3>Ruta 16</h3>
+      <p class="route-sub">Terminal → La Laguna</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Mercado · Av. Hidalgo · Parque Industrial
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1Acsh2K9YjFXIrZzHr1WL0bO1B94H1lg&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Ruta 8 -->
+    <div class="card" style="--accent: var(--c8);">
+      <div class="card-bg-num">8</div>
+      <button class="fav" onclick="toggleFav(this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+      <div class="route-badge">8</div>
+      <h3>Ruta 8</h3>
+      <p class="route-sub">Terminal → La Laguna</p>
+      <div class="info-list">
+        <div class="info-row">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Mercado · Av. Hidalgo · Parque Industrial
+        </div>
+      </div>
+      <div class="info-tags">
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          50 min aprox
+        </span>
+        <span class="tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          Cada 15 min
+        </span>
+      </div>
+      <a class="btn-ver" href="https://www.google.com/maps/d/u/2/edit?mid=1hEQvhtDtvBMivlxykw-RlsOHg4sAgbY&usp=sharing" target="_blank">
+        Ver ruta completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+<!-- ── FOOTER ── -->
+
+  <footer class="mt-5 py-3 text-center">
+    <div class="container" style="max-width: 900px;">
+      <h6 class="mb-1">Mi Ruta SJR</h6>
+      <p class="m-0" style="font-size:14px;">
+        Información de rutas de transporte público en San Juan del Río.
+      </p>
+
+      <div class="d-flex justify-content-center gap-3 mt-2">
+        <a href="#" class="text-dark text-decoration-none fs-6">Términos</a>
+        <a href="#" class="text-dark text-decoration-none fs-6">Privacidad</a>
+        <a href="#" class="text-dark text-decoration-none fs-6">Contacto</a>
+      </div>
+
+      <p class="mt-2" style="font-size:12px;">
+        © 2025 Mi Ruta SJR - Todos los derechos reservados.
+      </p>
+    </div>
+  </footer>
+
+<!-- ══════════════════════════════════════════════════════
+     Bootstrap bundle AL FINAL del body — incluye Popper.
+     Esto es lo que hace que el dropdown funcione.
+══════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmgJJBe7GYvRzVRE4h2q+RkLGt6c"
+  crossorigin="anonymous"></script>
+
+  <script>
+    //BUSCADOR
+    function filtrarRuta(val) {
+      const cards = document.querySelectorAll('.card');
+      const num   = val.trim();
+
+      if (!num) { cards.forEach(c => c.style.display = ''); document.getElementById('sinResultados').style.display = 'none'; return; }
+
+      let encontrado = false;
+      cards.forEach(c => {
+        const badge = c.querySelector('.route-badge');
+        if (badge && badge.textContent.trim() === num) {
+          c.style.display = '';
+          encontrado = true;
+        } else {
+          c.style.display = 'none';
+        }
+      });
+
+      const sr = document.getElementById('sinResultados');
+      document.getElementById('numBuscado').textContent = num;
+      sr.style.display = encontrado ? 'none' : 'block';
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById('inputRuta').value = '';
+      document.querySelectorAll('.card').forEach(c => c.style.display = '');
+      document.getElementById('sinResultados').style.display = 'none';
+    }
+    // ✅ LocalStorage para guardar favoritos
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll('.ruta-card');
+
+      cards.forEach(card => {
+        const id = card.getAttribute('data-id');
+        const star = card.querySelector('.fav-star');
+
+        if (localStorage.getItem(id) === "true") {
+          star.classList.add('active');
+        }
+
+        star.addEventListener('click', () => {
+          star.classList.toggle('active');
+          localStorage.setItem(id, star.classList.contains('active'));
+        });
+      });
+    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        fetch('/logout', { method: 'POST' })
+          .then(() => { window.location.href = '/login'; });
+      });
+    }
+     const logoutMini = document.getElementById('logout-mini');
+              if (logoutMini) {
+                logoutMini.addEventListener('click', () => {
+                  fetch('/logout', { method: 'POST' })
+                    .then(() => { window.location.href = '/login'; });
+                });
+              }
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

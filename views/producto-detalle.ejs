@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= producto.name %> — Mi Ruta SJR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
+      --burnt: #DE7A22;
+      --lagoon: #6AB187; --lagoon-claro: #EDF6F0; --lagoon-borde: #B5DAC3;
+      --sand: #F4CC70; --sand-claro: #FEF8E7; --sand-borde: #F0E0A0;
+      --rojo-claro: #FEF2F2; --rojo-borde: #FCA5A5;
+      --fondo: #EDEDEB; --blanco: #ffffff; --texto: #111; --suave: #777; --borde: #E0E0DC;
+    }
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; font-size: 14px; }
+
+    /* NAVBAR */
+    .navbar { background: var(--sea); padding: 0 24px; height: 54px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-size: 18px; font-weight: 800; color: #fff; text-decoration: none; }
+    .nav-back-link { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.85); font-size: 13px; text-decoration: none; transition: opacity 0.15s; }
+    .nav-back-link:hover { opacity: 1; color: #fff; }
+    .nav-back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* SUBNAVBAR */
+    .subnav { background: var(--blanco); border-bottom: 1px solid var(--borde); padding: 10px 24px; }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--suave); }
+    .breadcrumb a { color: var(--sea); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* MAIN */
+    .main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    /* TOP LAYOUT */
+    .top-layout { display: grid; grid-template-columns: 1fr 1.1fr 300px; gap: 16px; align-items: start; margin-bottom: 16px; }
+
+    /* IMAGEN */
+    .img-panel { background: var(--blanco); border: 1px solid var(--borde); padding: 16px; position: relative; }
+    .img-badges { display: flex; flex-direction: column; gap: 6px; position: absolute; top: 12px; left: 12px; }
+    .img-badge-chip { font-size: 11px; font-weight: 700; padding: 4px 10px; }
+    .chip-desc  { background: #22c55e; color: #fff; }
+    .chip-dom   { background: var(--sea); color: #fff; }
+    .chip-stock { background: var(--sand); color: #5A4000; }
+    .chip-out   { background: #ef4444; color: #fff; }
+    .img-box { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; }
+    .img-letter { font-size: 100px; font-weight: 800; color: var(--borde); line-height: 1; user-select: none; }
+
+    /* INFO PANEL */
+    .info-panel { background: var(--blanco); border: 1px solid var(--borde); padding: 24px; }
+
+    .prod-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .prod-tag { font-size: 12px; font-weight: 600; padding: 4px 12px; border: 1px solid var(--borde); color: var(--suave); background: var(--fondo); }
+
+    .prod-name { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 14px; color: var(--texto); }
+
+    .divider { height: 1px; background: var(--borde); margin: 14px 0; }
+
+    /* PRECIO */
+    .precio-original { font-size: 14px; color: var(--suave); text-decoration: line-through; margin-bottom: 2px; }
+    .precio-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .precio-val { font-size: 36px; font-weight: 800; color: var(--texto); line-height: 1; }
+    .precio-off { font-size: 18px; font-weight: 700; color: #22c55e; }
+    .envio-chip { display: inline-flex; align-items: center; gap: 5px; color: var(--sea); font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .envio-chip svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+    /* CANTIDAD */
+    .cantidad-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .cantidad-label { font-size: 14px; color: var(--suave); }
+    .cantidad-ctrl { display: flex; align-items: center; border: 1px solid var(--borde); }
+    .cantidad-btn { width: 32px; height: 32px; background: none; border: none; font-size: 18px; cursor: pointer; color: var(--sea); display: flex; align-items: center; justify-content: center; font-weight: 700; transition: background 0.12s; }
+    .cantidad-btn:hover { background: var(--sea-claro); }
+    .cantidad-num { width: 40px; height: 32px; text-align: center; border: none; border-left: 1px solid var(--borde); border-right: 1px solid var(--borde); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; outline: none; }
+    .cantidad-disp { font-size: 13px; color: var(--suave); }
+
+    /* BOTONES */
+    .btns-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .btn-comprar { background: var(--sea); color: #fff; border: none; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; transition: filter 0.15s; }
+    .btn-comprar:hover { filter: brightness(0.9); }
+    .btn-carrito { background: var(--blanco); color: var(--texto); border: 1.5px solid var(--texto); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; transition: background 0.15s; }
+    .btn-carrito:hover { background: var(--fondo); }
+    .btn-rutas { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--sea); color: #fff; border: none; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; padding: 14px; cursor: pointer; text-decoration: none; margin-top: 0; transition: filter 0.15s; width: 100%; }
+    .btn-rutas:hover { filter: brightness(0.9); }
+
+    /* GARANTIAS */
+    .garantias { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .garantia-item { display: flex; align-items: center; gap: 10px; }
+    .garantia-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .garantia-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+    .gi-sea   { background: var(--sea-claro); color: var(--sea); }
+    .gi-blue  { background: #EEF2FF; color: #4F46E5; }
+    .gi-green { background: var(--lagoon-claro); color: #2D6644; }
+    .gi-amber { background: var(--sand-claro); color: #7A5800; }
+    .garantia-text strong { font-size: 13px; font-weight: 700; display: block; }
+    .garantia-text span { font-size: 11px; color: var(--suave); }
+
+    /* VENDEDOR PANEL */
+    .vendedor-panel { background: var(--blanco); border: 1px solid var(--borde); padding: 20px; }
+    .vendedor-title { font-size: 14px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .vendedor-title svg { width: 15px; height: 15px; stroke: var(--sea); fill: none; }
+    .vend-divider { height: 1px; background: var(--borde); margin-bottom: 14px; }
+    .vend-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .vend-badge { display: inline-flex; align-items: center; gap: 4px; color: var(--sea); font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .vend-badge svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+    .vend-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .vend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--suave); }
+    .vend-row svg { width: 13px; height: 13px; stroke: var(--sea); fill: none; flex-shrink: 0; }
+    .btn-ver-mas { width: 100%; border: 1.5px solid var(--borde); background: var(--blanco); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; padding: 11px; cursor: pointer; color: var(--texto); transition: border-color 0.15s; text-decoration: none; display: block; text-align: center; }
+    .btn-ver-mas:hover { border-color: var(--sea); color: var(--sea); }
+
+    /* BOTTOM LAYOUT */
+    .bottom-layout { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
+
+    /* DESCRIPCION + CARACTERISTICAS */
+    .desc-panel { background: var(--blanco); border: 1px solid var(--borde); padding: 24px; }
+    .desc-section-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+    .desc-text { font-size: 14px; color: var(--suave); line-height: 1.7; margin-bottom: 20px; }
+    .caract-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+    .caract-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .caract-row { display: grid; grid-template-columns: 1fr 1fr; padding: 10px 0; border-bottom: 1px solid var(--borde); font-size: 13px; }
+    .caract-row:last-child { border-bottom: none; }
+    .caract-key { color: var(--suave); }
+    .caract-val { font-weight: 700; color: var(--texto); }
+
+    /* SERVICIO PANEL */
+    .srv-panel { background: var(--blanco); border: 1px solid var(--borde); padding: 20px; }
+    .srv-title { font-size: 14px; font-weight: 800; margin-bottom: 14px; }
+    .srv-items { display: flex; flex-direction: column; gap: 12px; }
+    .srv-item { display: flex; align-items: center; gap: 10px; }
+    .srv-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .srv-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+    .srv-text strong { font-size: 13px; font-weight: 700; display: block; }
+    .srv-text span { font-size: 11px; color: var(--suave); }
+
+    @media (max-width: 1024px) { .top-layout { grid-template-columns: 1fr 1fr; } .vendedor-panel { grid-column: 1/-1; } .bottom-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .top-layout { grid-template-columns: 1fr; } .btns-row { grid-template-columns: 1fr; } .garantias { grid-template-columns: 1fr; } .caract-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">Mi Ruta SJR</a>
+    <a class="nav-back-link" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+      Volver a resultados
+    </a>
+  </nav>
+
+  <!-- SUBNAV BREADCRUMB -->
+  <div class="subnav">
+    <div class="breadcrumb" style="max-width:1200px;margin:0 auto;">
+      <a href="/locales">Locales</a>
+      <span>›</span>
+      <a href="/locales/<%= vendedor.id %>/productos"><%= vendedor.nombre_local %></a>
+      <span>›</span>
+      <span><%= producto.name %></span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOP: IMAGEN + INFO + VENDEDOR -->
+    <div class="top-layout">
+
+      <!-- IMAGEN -->
+      <div class="img-panel">
+        <div class="img-badges">
+          <% if (producto.descuento && producto.descuento > 0) { %>
+            <span class="img-badge-chip chip-desc">-<%= producto.descuento %>% OFF</span>
+          <% } %>
+          <% if (producto.servicio_a_domicilio) { %>
+            <span class="img-badge-chip chip-dom">Envío gratis</span>
+          <% } %>
+          <% if (producto.quantity > producto.min_stock) { %>
+            <span class="img-badge-chip chip-stock">Disponible</span>
+          <% } else if (producto.quantity <= 0) { %>
+            <span class="img-badge-chip chip-out">Agotado</span>
+          <% } %>
+        </div>
+        <div class="img-box">
+          <% if (producto.image_url) { %>
+            <img src="<%= producto.image_url %>" alt="<%= producto.name %>">
+          <% } else { %>
+            <span class="img-letter"><%= (producto.name || 'P')[0].toUpperCase() %></span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="info-panel">
+        <!-- TAGS -->
+        <div class="prod-tags">
+          <% if (producto.servicio_a_domicilio) { %><span class="prod-tag">Domicilio</span><% } %>
+          <% if (producto.tipo_de_pago) { %><span class="prod-tag"><%= producto.tipo_de_pago %></span><% } %>
+        </div>
+
+        <h1 class="prod-name"><%= producto.name %></h1>
+
+        <div class="divider"></div>
+
+        <!-- PRECIO -->
+        <% var precio = Number(producto.precio) || 0; %>
+        <% var descuento = Number(producto.descuento) || 0; %>
+        <% var precioOrig = descuento > 0 ? (precio / (1 - descuento / 100)) : 0; %>
+
+        <% if (descuento > 0) { %>
+          <div class="precio-original">$<%= precioOrig.toFixed(2) %></div>
+        <% } %>
+        <div class="precio-row">
+          <span class="precio-val">$<%= precio.toFixed(2) %></span>
+          <% if (descuento > 0) { %>
+            <span class="precio-off"><%= descuento %>% OFF</span>
+          <% } %>
+        </div>
+
+        <% if (producto.servicio_a_domicilio) { %>
+          <div class="envio-chip">
+            <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+            Envío a domicilio disponible
+          </div>
+        <% } %>
+
+        <div class="divider"></div>
+
+        <!-- CANTIDAD -->
+        <div class="cantidad-row">
+          <span class="cantidad-label">Cantidad:</span>
+          <div class="cantidad-ctrl">
+            <button class="cantidad-btn" onclick="cambiarCant(-1)">−</button>
+            <input class="cantidad-num" id="cantNum" type="number" value="1" min="1" max="<%= producto.quantity %>">
+            <button class="cantidad-btn" onclick="cambiarCant(1)">+</button>
+          </div>
+          <span class="cantidad-disp">(<%= producto.quantity %> disponibles)</span>
+        </div>
+
+        <!-- BOTÓN RUTAS -->
+        <% if (user) { %>
+        <a href="/rutas" class="btn-rutas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          Ver rutas de San Juan del Río
+        </a>
+      <% } else { %>
+        <a href="/login" class="btn-rutas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Inicia sesión para ver rutas
+        </a>
+      <% } %>
+
+        <div class="divider"></div>
+
+        <!-- GARANTÍAS -->
+        <div class="garantias">
+          <div class="garantia-item">
+            <div class="garantia-icon gi-sea"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="garantia-text"><strong>Compra protegida</strong><span>Garantía del vendedor</span></div>
+          </div>
+          <div class="garantia-item">
+            <div class="garantia-icon gi-blue"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div class="garantia-text"><strong>Pago seguro</strong><span>Múltiples métodos</span></div>
+          </div>
+          <% if (producto.servicio_a_domicilio) { %>
+          <div class="garantia-item">
+            <div class="garantia-icon gi-green"><svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg></div>
+            <div class="garantia-text"><strong>Envío a domicilio</strong><span>Consulta disponibilidad</span></div>
+          </div>
+          <% } %>
+          <div class="garantia-item">
+            <div class="garantia-icon gi-amber"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="garantia-text"><strong>Stock real</strong><span>Inventario actualizado</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VENDEDOR -->
+      <div class="vendedor-panel">
+        <div class="vendedor-title">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Información del vendedor
+        </div>
+        <div class="vend-divider"></div>
+        <div class="vend-name"><%= vendedor.nombre_local %></div>
+        <div class="vend-badge">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Vendedor verificado
+        </div>
+        <div class="vend-rows">
+          <% if (vendedor.nombre) { %>
+          <div class="vend-row">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <%= vendedor.nombre %>
+          </div>
+          <% } %>
+          <% if (vendedor.direccion) { %>
+          <div class="vend-row">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-8-7-8-13a8 8 0 0 1 16 0c0 6-8 13-8 13z"/><circle cx="12" cy="8" r="3"/></svg>
+            <%= vendedor.direccion %>
+          </div>
+          <% } %>
+          <% if (vendedor.telefono_1) { %>
+          <div class="vend-row">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.07 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 3.98 2h3a2 2 0 0 1 2 1.72c.13 1 .38 1.99.74 2.94a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.14-1.14a2 2 0 0 1 2.11-.45c.95.36 1.94.61 2.94.74A2 2 0 0 1 22 16.92z"/></svg>
+            <%= vendedor.telefono_1 %>
+          </div>
+          <% } %>
+          <% if (vendedor.email) { %>
+          <div class="vend-row">
+            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
+            <%= vendedor.email %>
+          </div>
+          <% } %>
+          <div class="vend-row">
+            <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <%= vendedor.quantity_products || 0 %> productos en el local
+          </div>
+        </div>
+        <a class="btn-ver-mas" href="/locales/<%= vendedor.id %>/productos">Ver más productos</a>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM: DESCRIPCION + SERVICIO -->
+    <div class="bottom-layout">
+
+      <!-- DESCRIPCION + CARACTERISTICAS -->
+      <div class="desc-panel">
+        <% if (producto.descripcion) { %>
+          <div class="desc-section-title">Descripción</div>
+          <p class="desc-text"><%= producto.descripcion %></p>
+        <% } %>
+
+        <div class="caract-title">Características</div>
+        <div>
+          <div class="caract-row">
+            <span class="caract-key">Stock:</span>
+            <span class="caract-val"><%= producto.quantity %> unidades</span>
+            <span class="caract-key">Stock mínimo:</span>
+            <span class="caract-val"><%= producto.min_stock %> unidades</span>
+          </div>
+          <% if (producto.max_stock) { %>
+          <div class="caract-row">
+            <span class="caract-key">Stock máximo:</span>
+            <span class="caract-val"><%= producto.max_stock %> unidades</span>
+            <span class="caract-key">Fecha ingreso:</span>
+            <span class="caract-val"><%= producto.ingreso_date || '—' %></span>
+          </div>
+          <% } else { %>
+          <div class="caract-row">
+            <span class="caract-key">Fecha ingreso:</span>
+            <span class="caract-val"><%= producto.ingreso_date || '—' %></span>
+            <span class="caract-key"></span>
+            <span class="caract-val"></span>
+          </div>
+          <% } %>
+          <% if (producto.ubicacion_exacta) { %>
+          <div class="caract-row">
+            <span class="caract-key">Ubicación:</span>
+            <span class="caract-val"><%= producto.ubicacion_exacta %></span>
+            <span class="caract-key">Tipo de pago:</span>
+            <span class="caract-val"><%= producto.tipo_de_pago || '—' %></span>
+          </div>
+          <% } %>
+          <div class="caract-row">
+            <span class="caract-key">Servicio a domicilio:</span>
+            <span class="caract-val"><%= producto.servicio_a_domicilio ? 'Sí' : 'No' %></span>
+            <span class="caract-key">Descuento:</span>
+            <span class="caract-val"><%= producto.descuento && producto.descuento > 0 ? producto.descuento + '%' : 'Sin descuento' %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICIO PANEL -->
+      <div class="srv-panel">
+        <div class="srv-title">Servicios disponibles</div>
+        <div class="srv-items">
+          <div class="srv-item">
+            <div class="srv-icon" style="background:var(--sea-claro);color:var(--sea);">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="srv-text"><strong>Compra protegida</strong><span>Garantía del vendedor</span></div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-icon" style="background:#EEF2FF;color:#4F46E5;">
+              <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="srv-text">
+              <strong>Tipo de pago</strong>
+              <span><%= producto.tipo_de_pago || 'Consultar al vendedor' %></span>
+            </div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-icon" style="background:<%= producto.servicio_a_domicilio ? 'var(--lagoon-claro)' : 'var(--fondo)' %>;color:<%= producto.servicio_a_domicilio ? '#2D6644' : 'var(--suave)' %>;">
+              <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+            </div>
+            <div class="srv-text">
+              <strong>Envío a domicilio</strong>
+              <span><%= producto.servicio_a_domicilio ? 'Disponible' : 'No disponible' %></span>
+            </div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-icon" style="background:var(--sand-claro);color:#7A5800;">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="srv-text">
+              <strong>Ubicación</strong>
+              <span><%= producto.ubicacion_exacta || vendedor.direccion || 'Consultar al local' %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    function cambiarCant(delta) {
+      const input = document.getElementById('cantNum');
+      const max   = parseInt(input.max) || 99;
+      let val = parseInt(input.value) + delta;
+      if (val < 1) val = 1;
+      if (val > max) val = max;
+      input.value = val;
+    }
+  </script>
+
+</body>
+</html>

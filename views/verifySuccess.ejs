@@ -1,0 +1,20 @@
+<%- include("templates/navbar.ejs", {titulo: "Verificación exitosa" })%>
+
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card border-0 shadow-lg text-center col-sm-10 col-md-6 col-lg-4">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <a class="navbar-brand display-1 text-success" href="#">
+                        <img src="/image/logo_blanco.png" height="150" alt="Logo">
+                    </a>
+                </div>
+                <h2 class="card-title mb-3">¡Cuenta Verificada!</h2>
+                <p class="card-text mb-4">Hola <strong>
+                        <%= username %>
+                    </strong>, tu cuenta se ha verificado correctamente.</p>
+                <a href="/login" class="btn btn-warning btn-lg w-100">Ir al login</a>
+            </div>
+        </div>
+    </div>
+
+    <%- include("templates/footer.ejs") %>

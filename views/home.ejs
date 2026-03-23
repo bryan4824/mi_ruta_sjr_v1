@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Ruta SJR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/home_info.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="
+	sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg rounded bg-body-tertiary">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <img src="/image/logo_sin_fondo.png" height="35" alt="Logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contacto">Contacto</a></li>
+        <li class="nav-item"><a class="nav-link" href="#nosotros">Sobre Nosotros</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <a class="btn btn-light me-2" href="/login">Iniciar sesión</a>
+        <a class="btn btn-warning" href="/register">Registrar</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header id="inicio" class="hero-dynamic position-relative overflow-hidden">
+  <div class="container hero-container">
+    <div class="row align-items-center hero-row">
+      <div class="col-md-6 content-area">
+        <h1 class="display-4 fw-bold mb-3 animate-text">
+          Bienvenido a <br><span class="text-danger">Mi Ruta SJR</span>
+        </h1>
+        <p class="lead mb-4">
+          Facilitamos tu movilidad en San Juan del Río. Consulta rutas, horarios y productos fácilmente desde nuestra plataforma intuitiva. Tu viaje comienza aquí.
+        </p>
+        <a href="/login" class="btn btn-warning btn-lg hover-scale">Explorar Rutas</a>
+      </div>
+      <div class="col-md-6 text-center logo-container">
+        <img src="/image/logo_sin_fondo.png" alt="Logo Mi Ruta SJR" class="hero-img">
+      </div>
+    </div>
+  </div>
+
+  <!-- Calle / piso -->
+  <div class="street-lane">
+    <div class="lane-line"></div>
+  </div>
+
+  <!-- Iconos fijos en la calle -->
+  <img src="/image/bus-stop_1.png" class="street-icon svg-stop" alt="Bus Stop">
+  <img src="/image/store.png"   class="street-icon svg-shop" alt="Negocio">
+
+  <!-- Bus animado -->
+  <img src="/image/bus.png" class="svg-bus" alt="Bus">
+
+  
+  <canvas id="dynamicCanvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+</header>
+
+<!-- Ícono de negocio (tienda) SVG inline como fallback si no hay imagen -->
+<svg id="shop-svg" style="display:none" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="28" width="48" height="30" rx="3" fill="#E1701A"/>
+  <rect x="20" y="38" width="10" height="20" fill="#fff"/>
+  <rect x="34" y="38" width="10" height="12" rx="2" fill="#fff"/>
+  <path d="M4 28 L32 8 L60 28Z" fill="#F7A440"/>
+  <rect x="28" y="0" width="8" height="12" fill="#FFD45A"/>
+</svg>
+
+<style>
+/* ── HERO ── */
+.hero-dynamic {
+  background: #ffe35a;
+  min-height: 88vh;
+  position: relative;
+  overflow: hidden;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-container { flex: 1; }
+
+.hero-row {
+  min-height: 75vh;
+  padding: 60px 0 120px;
+}
+
+.animate-text { animation: fadeInUp 1.5s ease forwards; }
+@keyframes fadeInUp {
+  0%   { opacity:0; transform:translateY(21px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+
+.hover-scale:hover { transform: scale(1.05); transition: 0.3s; }
+
+.logo-container .hero-img {
+  max-width: 470px;
+  width: 110%;
+  height: auto;
+}
+
+.content-area, .logo-container { position: relative; z-index: 5; }
+
+/* ── CALLE ── */
+.street-lane {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: #c8a040;
+  z-index: 2;
+}
+.lane-line {
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    #fff 0px, #fff 40px,
+    transparent 40px, transparent 80px
+  );
+  transform: translateY(-50%);
+}
+
+/* ── ICONOS EN CALLE ── */
+.street-icon {
+  position: absolute;
+  bottom: 47.5px; /*posicion en y de icnos*/
+  z-index: 3;
+  width: 60px;
+  display: block;
+  transform: translateY(0);
+}
+
+.svg-stop { left: 15%; width: 60px; }
+.svg-shop { left: 62%; width: 70px; }
+
+/* ── BUS ── */
+.svg-bus {
+  position: absolute;
+  bottom: 10px;
+  width: 90px;
+  z-index: 7;
+  animation: busRide 18s linear infinite;
+}
+
+@keyframes busRide {
+  0%   { left: -12%; }
+  13%  { left: 13%;  }   /* llega a parada */
+  18%  { left: 13%;  }   /* espera */
+  58%  { left: 58%;  }   /* llega a negocio */
+  63%  { left: 58%;  }   /* espera */
+  100% { left: 115%; }
+}
+
+── FLOTANTES ──
+.floating {
+  position: absolute;
+  width: 70px;
+  z-index: 2;
+}
+.svg-ticket { top: 15%; right: 8%; }
+.svg-bag    { top: 55%; right: 5%; }
+
+/* ── CANVAS ── */
+#dynamicCanvas {
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero-row { padding: 40px 0 110px; min-height: auto; }
+
+  .logo-container { display: none; }
+
+  .hero-dynamic { min-height: auto; }
+
+  .svg-bus   { width: 54px; }
+  .svg-stop  { width: 28px; bottom: 46px; }
+  .svg-shop  { width: 34px; bottom: 46px; }
+
+  .street-lane { height: 46px; }
+
+  .floating { width: 48px; }
+  .svg-ticket { top: 10%; right: 4%; }
+  .svg-bag    { display: none; }
+
+  h1.display-4 { font-size: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .svg-bus  { width: 44px; }
+  .svg-stop { left: 36%; width: 24px; bottom: 37px; }
+  .svg-shop { left: 62%; width: 28px; bottom: 37px; }
+  .street-lane { height: 40px; }
+  h1.display-4 { font-size: 1.7rem; }
+}
+</style>
+
+<script>
+const canvas = document.getElementById('dynamicCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Flotantes (solo en desktop)
+const floatingEls = [
+  document.querySelector('.svg-ticket'),
+  document.querySelector('.svg-bag')
+].filter(Boolean);
+
+const floaters = floatingEls.map(el => {
+  const rect = el.getBoundingClientRect();
+  return {
+    el,
+    x: rect.left,
+    y: rect.top,
+    vx: (Math.random() - 0.5) * 0.25,
+    vy: (Math.random() - 0.5) * 0.25,
+  };
+});
+
+function moveFloaters() {
+  if (window.innerWidth < 768) { requestAnimationFrame(moveFloaters); return; }
+  floaters.forEach(f => {
+    f.x += f.vx;
+    f.y += f.vy;
+    if (f.x < 0 || f.x > window.innerWidth  - 80) f.vx *= -1;
+    if (f.y < 0 || f.y > window.innerHeight - 80) f.vy *= -1;
+    f.el.style.transform = `translate(${f.vx > 0 ? 0 : 0}px,0) rotate(${Math.sin(Date.now()/900)*8}deg)`;
+  });
+  requestAnimationFrame(moveFloaters);
+}
+moveFloaters();
+
+// Partículas
+const particles = [];
+const colors = ['#FFD600','#FF9800','#FF3D00','#FFC107','#FFF176'];
+for (let i = 0; i < 45; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    radius: 4 + Math.random() * 9,
+    angle:  Math.random() * Math.PI * 2,
+    speed:  0.4 + Math.random() * 0.9,
+    color:  colors[Math.floor(Math.random() * colors.length)],
+    sway:   Math.random() * 0.4
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += Math.cos(p.angle) * p.speed;
+    p.y += Math.sin(p.angle) * p.speed + Math.sin(p.angle * 5) * p.sway;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width)  p.x = 0;
+    if (p.y < 0) p.y = canvas.height;
+    if (p.y > canvas.height) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(p.color, 0.45);
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+function hexToRgba(hex, a) {
+  hex = hex.replace('#', '');
+  const n = parseInt(hex, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+</script>
+
+
+<!-- SOBRE NOSOTROS -->
+<section id="nosotros">
+  <div class="inner">
+    <div class="rev-l">
+      <span class="tag tag-burnt">Sobre nosotros</span>
+      <h2>Conectamos tu ciudad,<br/><em>impulsamos</em> tu negocio.</h2>
+      <p>Somos un equipo comprometido con la movilidad y el comercio local de San Juan del Río. Rutas de transporte y negocios locales en una sola plataforma.</p>
+      <div class="stats">
+        <div class="stat"><span class="n">12+</span><span class="l">Rutas activas</span></div>
+        <div class="stat"><span class="n">80+</span><span class="l">Negocios locales</span></div>
+        <div class="stat"><span class="n">5k+</span><span class="l">Usuarios al mes</span></div>
+      </div>
+    </div>
+    <div class="mosaic rev-r">
+      <div class="tile">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Local"/>
+        <div class="ov"></div><span class="badge">Comercio local</span>
+      </div>
+      <div class="tile">
+        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&q=80" alt="Bus"/>
+        <div class="ov"></div><span class="badge">Rutas</span>
+      </div>
+      <div class="tile">
+        <img src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400&q=80" alt="Ciudad"/>
+        <div class="ov"></div><span class="badge">SJR</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<svg viewBox="0 0 1440 70" preserveAspectRatio="none" class="wave" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,0 C480,70 960,70 1440,0 L1440,70 L0,70 Z" fill="#fce598"/>
+</svg>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="inner">
+    <div class="svc-top rev">
+      <div>
+        <span class="tag tag-burnt">✦ Servicios</span>
+        <h2>Todo lo que necesitas<br/><em>para moverte.</em></h2>
+      </div>
+      <p>Desde encontrar tu ruta hasta descubrir el mejor negocio cerca de tu parada.</p>
+    </div>
+    <div class="svc-grid">
+      <div class="svc-card rev" style="transition-delay:.05s">
+        <div class="svc-icon ic-a">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E1701A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <h5>Consulta de Rutas</h5>
+        <p>Encuentra la mejor ruta con paradas, tiempos y alternativas en tiempo real.</p>
+        <span class="svc-lbl">Transporte</span>
+      </div>
+      <div class="svc-card rev" style="transition-delay:.1s">
+        <div class="svc-icon ic-b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F7A440" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h5>Mapa Interactivo</h5>
+        <p>Rutas visuales, puntos de interés y negocios sobre el mapa de la ciudad.</p>
+        <span class="svc-lbl">Explorar</span>
+      </div>
+      <div class="svc-card rev" style="transition-delay:.15s">
+        <div class="svc-icon ic-a">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E1701A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <h5>Notificaciones</h5>
+        <p>Alertas de cambios de ruta, ofertas de negocios y avisos importantes.</p>
+        <span class="svc-lbl">Alertas</span>
+      </div>
+      <div class="svc-card rev" style="transition-delay:.2s">
+        <div class="svc-icon ic-b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F7A440" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h5>Directorio de Negocios</h5>
+        <p>Tiendas, restaurantes y servicios organizados por categoría y ubicación.</p>
+        <span class="svc-lbl">Negocios</span>
+      </div>
+      <div class="svc-card rev" style="transition-delay:.25s">
+        <div class="svc-icon ic-a">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E1701A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h5>Vitrina Digital</h5>
+        <p>Los negocios muestran productos, promociones y horarios en la plataforma.</p>
+        <span class="svc-lbl">Promoción</span>
+      </div>
+      <div class="svc-card rev" style="transition-delay:.3s">
+        <div class="svc-icon ic-b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F7A440" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h5>Estadísticas</h5>
+        <p>Métricas de visitas y alcance para que los negocios conozcan su rendimiento.</p>
+        <span class="svc-lbl">Analytics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<svg viewBox="0 0 1440 70" preserveAspectRatio="none" class="wave" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,70 C480,0 960,0 1440,70 L1440,70 L0,70 Z" fill="#ffffff"/>
+</svg>
+
+<!-- NEGOCIOS -->
+<section id="negocios">
+  <div class="inner">
+    <div class="neg-top">
+      <div class="rev-l">
+        <span class="tag tag-burnt">Negocios locales</span>
+        <h2>Impulsa tu negocio<br/>en lo <em>digital.</em></h2>
+      </div>
+      <div class="rev-r">
+        <p>Conectamos comerciantes de San Juan del Río con miles de usuarios. Publica tu negocio y llega a más clientes.</p>
+        <a href="/registro-negocio" class="btn-border">
+          Registra tu negocio
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="biz-grid">
+      <div class="biz-card rev" style="transition-delay:.05s">
+        <img src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=400&q=80" alt="Restaurante"/>
+        <div class="grd"></div>
+        <span class="open-pill"><span class="odot"></span>Abierto</span>
+        <div class="binfo"><span class="biz-cat bc1">Restaurante</span><div class="bname">La Cocina de Ana</div><div class="bsub">Comida casera · Ruta 4</div></div>
+      </div>
+      <div class="biz-card rev" style="transition-delay:.1s">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80" alt="Tienda"/>
+        <div class="grd"></div>
+        <span class="open-pill"><span class="odot"></span>Abierto</span>
+        <div class="binfo"><span class="biz-cat bc2">Moda</span><div class="bname">Boutique Estilo</div><div class="bsub">Ropa · Ruta 2</div></div>
+      </div>
+      <div class="biz-card rev" style="transition-delay:.15s">
+        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80" alt="Café"/>
+        <div class="grd"></div>
+        <div class="binfo"><span class="biz-cat bc3">Café</span><div class="bname">Café del Centro</div><div class="bsub">Especialidad · Ruta 1</div></div>
+      </div>
+      <div class="biz-card rev" style="transition-delay:.2s">
+        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80" alt="Farmacia"/>
+        <div class="grd"></div>
+        <span class="open-pill"><span class="odot"></span>Abierto</span>
+        <div class="binfo"><span class="biz-cat bc4">Salud</span><div class="bname">Farmacia Vida</div><div class="bsub">Medicamentos · Ruta 3</div></div>
+      </div>
+    </div>
+    <div class="promo rev">
+      <div>
+        <h3>¿Tienes un negocio en San Juan del Río?<br/>Llévalo al siguiente nivel.</h3>
+        <p>Únete a más de 80 negocios que ya aumentaron sus ventas. Registro gratuito.</p>
+      </div>
+      <a href="/registro-negocio" class="btn-white">Publicar mi negocio →</a>
+    </div>
+  </div>
+</section>
+
+<svg viewBox="0 0 1440 70" preserveAspectRatio="none" class="wave" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,0 C480,70 960,70 1440,0 L1440,70 L0,70 Z" fill="#F7A440"/>
+</svg>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="inner">
+    <div class="cbox rev">
+      <div>
+        <span class="tag tag-burnt">Contacto</span>
+        <h2>¿Tienes dudas o<br/><em>sugerencias?</em></h2>
+        <p>Estamos aquí para ayudarte. Escríbenos y te responderemos en menos de 24 horas.</p>
+      </div>
+      <div class="ccta">
+        <a href="/contacto" class="btn-main">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Enviar mensaje
+        </a>
+        <span class="cnote">Respondemos en menos de 24h</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.rev,.rev-l,.rev-r').forEach(el => obs.observe(el));
+</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <%- include("templates/footer.ejs")%>

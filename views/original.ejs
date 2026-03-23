@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Rutas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="
+	sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons (para íconos simples y estrella) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(to bottom, #fff3cd 70%);
+    }
+
+    .ruta-card {
+      background: #fff9e6;
+      border-radius: 20px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .ruta-card:hover {
+      box-shadow: 0 0 15px rgba(255, 153, 0, 0.4);
+      border-left: 6px solid rgba(255, 136, 0, 0.7);
+    }
+
+    .fav-star {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: #cfcfcf;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .fav-star.active {
+      color: orange;
+    }
+
+    .info-icon {
+      font-size: 15px;
+      margin-right: 4px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand me-2" href="#">
+        <img src="/image/logo_sin_fondo.png" height="40" alt="Logo" style="margin-top: -1px;" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contacto">Contacto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Sobre Nosotros</a>
+          </li>
+          <% if (user && user.role && user.role.rol==="admin" ) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/showUser">Usuarios</a>
+            </li>
+            <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/registro_vendedor">Solicitud de venta</a>
+          </li>
+
+        </ul>
+        <div class="d-flex align-items-center">
+          <% if (user) { %>
+            <span class="me-3">Hola, <%= user.username %></span>
+
+            <!-- <button type="button" class="btn btn-warning" id="logout-btn">Cerrar Sesión</button> -->
+            <!-- MENÚ HAMBURGUESA PERSONAL -->
+            <div class="dropdown ms-3">
+              <button class="btn btn-light border rounded-circle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-list" style="font-size:22px;"></i>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person"></i> Ver perfil</a></li>
+                <li><a class="dropdown-item" href="/configuracion"><i class="bi bi-gear"></i> Configuración</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><button class="dropdown-item text-danger" id="logout-btn">
+                    <i class="bi bi-box-arrow-right" ></i> Cerrar sesión
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <% } else { %>
+              <a class="btn btn-primary" href="/login">Iniciar Sesión</a>
+              <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container py-5" style="max-width: 900px;">
+    <h2 class="text-center mb-4">Rutas de Transporte Público</h2>
+
+    <div class="row g-4">
+
+      <!-- TARJETA 1 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta12">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 7</h4>
+          <p class="text-muted mb-2">Inicia → La Mora</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Terminal de Autobuses. <br>
+            <i class="bi bi-clock info-icon"></i> 35 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 12 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1akCTFZR1TTdG4ty6IqsG_DndQh6pzrg&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+
+      <!-- TARJETA 2 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 2</h4>
+          <p class="text-muted mb-2">Inicia → Calle Galeana</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Termina → La Palama<br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1z1DTLutRmdlh66OIwS8NEuuIAZCAJDE&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 3 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 10</h4>
+          <p class="text-muted mb-2">Inicia → Camino Real Cerro Gordo</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Termina → Terminal de Autobuses<br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1EGC2hLRUNrC9YwcKZHZfIXkkXMJUF9M&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 4 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 23</h4>
+          <p class="text-muted mb-2">Inicia → Lomas del Pedregal</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Termina → 5 deMayo <br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1zIIqvb6HsLC1ii9lYCNV6FD1HN6vsYw&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 5 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 4</h4>
+          <p class="text-muted mb-2"> Inicia → Oriente 2 Nuevo San Juan </p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Inicia → 5 de mayo <br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1Jr_HJ4v9_WpOZgH-rQo5RUBq94LUGzA&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 6 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 20</h4>
+          <p class="text-muted mb-2">Terminal → La Laguna</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Mercado, Av. Hidalgo, Parque Industrial <br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1kdEZPC76M38ff0RBgZrpQc8da3pAJiI&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 7 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 16</h4>
+          <p class="text-muted mb-2">Terminal → La Laguna</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Mercado, Av. Hidalgo, Parque Industrial <br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1Acsh2K9YjFXIrZzHr1WL0bO1B94H1lg&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+      <!-- TARJETA 7 -->
+      <div class="col-12 col-md-6">
+        <div class="ruta-card shadow-sm" data-id="ruta33">
+          <i class="bi bi-star fav-star"></i>
+
+          <h4 class="mb-1">Ruta 8</h4>
+          <p class="text-muted mb-2">Terminal → La Laguna</p>
+
+          <p style="font-size:14px">
+            <i class="bi bi-geo-alt info-icon"></i> Mercado, Av. Hidalgo, Parque Industrial <br>
+            <i class="bi bi-clock info-icon"></i> 50 min aprox <br>
+            <i class="bi bi-arrow-repeat info-icon"></i> Cada 15 min
+          </p>
+
+          <a href="https://www.google.com/maps/d/u/2/edit?mid=1hEQvhtDtvBMivlxykw-RlsOHg4sAgbY&usp=sharing"
+            target="_blank" class="btn w-100" style="background:#ffa726; border:none; color:white;">
+            Ver ruta completa
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ✅ LocalStorage para guardar favoritos
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll('.ruta-card');
+
+      cards.forEach(card => {
+        const id = card.getAttribute('data-id');
+        const star = card.querySelector('.fav-star');
+
+        if (localStorage.getItem(id) === "true") {
+          star.classList.add('active');
+        }
+
+        star.addEventListener('click', () => {
+          star.classList.toggle('active');
+          localStorage.setItem(id, star.classList.contains('active'));
+        });
+      });
+    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        fetch('/logout', { method: 'POST' })
+          .then(() => { window.location.href = '/login'; });
+      });
+    }
+     const logoutMini = document.getElementById('logout-mini');
+              if (logoutMini) {
+                logoutMini.addEventListener('click', () => {
+                  fetch('/logout', { method: 'POST' })
+                    .then(() => { window.location.href = '/login'; });
+                });
+              }
+  </script>
+
+
+  <footer class="mt-5 py-3 text-center">
+    <div class="container" style="max-width: 900px;">
+      <h6 class="mb-1">Mi Ruta SJR</h6>
+      <p class="m-0" style="font-size:14px;">
+        Información de rutas de transporte público en San Juan del Río.
+      </p>
+
+      <div class="d-flex justify-content-center gap-3 mt-2">
+        <a href="#" class="text-dark text-decoration-none fs-6">Términos</a>
+        <a href="#" class="text-dark text-decoration-none fs-6">Privacidad</a>
+        <a href="#" class="text-dark text-decoration-none fs-6">Contacto</a>
+      </div>
+
+      <p class="mt-2" style="font-size:12px;">
+        © 2025 Mi Ruta SJR - Todos los derechos reservados.
+      </p>
+    </div>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

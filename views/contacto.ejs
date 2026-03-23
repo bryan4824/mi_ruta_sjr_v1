@@ -1,0 +1,63 @@
+<%- include("templates/navbar.ejs", {titulo: "Contacto"})%>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style_contacto.css" />
+
+<!-- HERO AMARILLO -->
+<div class="contacto-hero">
+  <div class="burbuja burbuja-1"></div>
+  <div class="burbuja burbuja-2"></div>
+  <div class="burbuja burbuja-3"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Contáctanos</span>
+    <h1>¿Tienes alguna duda?</h1>
+    <p>Cualquier duda o sugerencia nos la puedes enviar y te responderemos a la brevedad posible.</p>
+  </div>
+</div>
+<div class="hero-stripe"></div>
+
+<!-- FORM CARD -->
+<div class="contacto-wrapper">
+  <div class="contacto-card">
+
+    <form action="/contacto" method="POST" id="formulario_contacto">
+
+      <div class="form-body">
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="form-label" for="nombre">Nombre completo</label>
+            <input class="form-control" type="text" name="nombre" id="nombre"
+              placeholder="Juan Pérez" required>
+          </div>
+          <div class="field-group">
+            <label class="form-label" for="correo">Correo</label>
+            <input class="form-control" type="email" name="correo" id="correo"
+              placeholder="juan@gmail.com" required>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="form-label" for="edad">Edad</label>
+          <input class="form-control" type="number" name="edad" id="edad"
+            placeholder="18" required>
+        </div>
+
+        <div class="field-group">
+          <label class="form-label" for="mensaje">¿Cuál es tu duda o sugerencia?</label>
+          <textarea class="form-control" name="mensaje" id="mensaje"
+            placeholder="Escribe sugerencias o alguna duda que tengas y te responderemos"></textarea>
+        </div>
+
+      </div>
+
+      <div class="card-foot">
+        <span class="hint">Te responderemos en menos<br>de 24 horas hábiles.</span>
+        <button class="btn-enviar" type="submit" id="btn-enviar">Enviar mensaje →</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<%- include("templates/footer.ejs")%>

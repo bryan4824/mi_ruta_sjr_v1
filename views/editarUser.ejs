@@ -1,0 +1,35 @@
+<%- include("templates/navbar.ejs", {titulo: "Editar Contactos" })%>
+    <div class="mt-3 shadow-sm p-3 mb-3 bg-body rounded ">
+        <!--
+                display-4 → tamaño grande y elegante para títulos.
+                text-center → centra el texto.
+                fw-bold → lo hace en negritas.
+                text-primary → usa el color principal de Bootstrap (azul por defecto).
+                my-4 → agrega espacio arriba y abajo para que no se vea pegado.
+                -->
+        <h1 class="p-3 mb-4 bg-warning text-white rounded text-center">Editar Contactos.</h1>
+        <h2 class="display-6 text-center fw-bold text-dark bg-light rounded py-2">Edita la informacion del contacto
+            seleccionado
+        </h2>
+    </div>
+
+    <div class="container">
+        <form action="/editarCambios" method="POST" id="formulario_contacto">
+            <input type="text" name="id" id="id" value="<%= user._id %>" hidden>
+            <div>
+                <label class="form-label" for="username">Nuevo Usuario:</label>
+                <input class="form-control form-control-lg" type="text" name="username" id="username"
+                    placeholder="Juan Perez" required value="<%= user.username %>">
+                <!-- contactoBD viene de  archivo rutas.js en la ruta GET /editar/:id en la linea 36-->
+            </div>
+            <div>
+                <label class="form-label" for="email">Nuevo Correo</label>
+                <input class="form-control form-control-lg" type="email" name="email" id="email"
+                    placeholder="juanperez@gmail.com" required value="<%= user.email %>">
+            </div>
+            <br>
+            <button class="btn btn-warning" type="submit" id="btn-enviar">Actualizar</button>
+        </form>
+    </div>
+    <br>
+    <%- include("templates/footer.ejs") %>

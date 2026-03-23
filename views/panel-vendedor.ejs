@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Panel · <%= vendedor.nombre_local %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
+      --burnt: #DE7A22; --burnt-claro: #FEF0E3; --burnt-borde: #F5C99A;
+      --lagoon: #6AB187; --lagoon-claro: #EDF6F0; --lagoon-borde: #B5DAC3;
+      --sandstone: #F4CC70; --sand-claro: #FEF8E7; --sand-borde: #F0E0A0;
+      --rojo: #E57373; --rojo-claro: #FEF2F2; --rojo-borde: #FCA5A5;
+      --fondo: #F7F9F8; --blanco: #ffffff; --texto: #1E2A1E; --suave: #7A8C8A; --borde: #E4EDE8;
+    }
+    body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; display: grid; grid-template-columns: 240px 1fr; }
+    .sidebar { background: var(--texto); display: flex; flex-direction: column; padding: 28px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+    .sidebar-logo h1 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+    .sidebar-logo span { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .logo-dot { width: 8px; height: 8px; background: var(--burnt); border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .nav-section { padding: 0 20px; margin-bottom: 8px; }
+    .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0 8px; margin-bottom: 4px; display: block; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.5); cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: all 0.15s; }
+    .nav-item svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; border-left: 3px solid var(--burnt); }
+    .sidebar-bottom { margin-top: auto; padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-bottom a { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.15s; }
+    .sidebar-bottom a:hover { color: rgba(255,255,255,0.65); }
+    .sidebar-bottom svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+    .main { padding: 32px 36px 64px; overflow-y: auto; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .page-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 22px; font-weight: 800; color: var(--texto); }
+    .page-sub { font-size: 13px; color: var(--suave); margin-top: 2px; }
+    .card { background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 16px; overflow: hidden; }
+    .card-header { padding: 18px 22px; border-bottom: 1.5px solid var(--borde); display: flex; align-items: center; gap: 12px; }
+    .card-header h3 { font-size: 15px; font-weight: 800; }
+    .card-header p { font-size: 12px; color: var(--suave); margin-top: 2px; }
+    .card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .card-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .card-body { padding: 22px; }
+    .perfil-grid { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; margin-bottom: 24px; }
+    .perfil-avatar { width: 80px; height: 80px; background: var(--sea); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .perfil-info h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .perfil-info p { font-size: 13px; color: var(--suave); }
+    .perfil-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--lagoon-claro); border: 1.5px solid var(--lagoon-borde); color: #2D6644; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 6px; }
+    .perfil-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .pfield label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--suave); display: block; margin-bottom: 5px; }
+    .pfield input { width: 100%; background: var(--fondo); border: 1.5px solid var(--borde); border-radius: 10px; padding: 9px 13px; font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--texto); outline: none; transition: border-color 0.18s; }
+    .pfield input:focus { border-color: var(--sea); background: var(--blanco); }
+    .pfield input::placeholder { color: var(--suave); }
+    .pfield.full { grid-column: 1 / -1; }
+    .btn { display: inline-flex; align-items: center; gap: 7px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer; transition: filter 0.18s, transform 0.15s; }
+    .btn:hover { filter: brightness(0.92); }
+    .btn:active { transform: scale(0.98); }
+    .btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .btn-primary { background: var(--sea); color: #fff; }
+    .btn-secondary { background: var(--fondo); color: var(--texto); border: 1.5px solid var(--borde); }
+    .btn-danger { background: var(--rojo-claro); color: #B91C1C; border: 1.5px solid var(--rojo-borde); }
+    .btn-warning { background: var(--burnt-claro); color: var(--burnt); border: 1.5px solid var(--burnt-borde); }
+    .btn-success { background: var(--lagoon-claro); color: #2D6644; border: 1.5px solid var(--lagoon-borde); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 1.5px solid var(--borde); }
+    th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--suave); white-space: nowrap; }
+    td { padding: 13px 16px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--fondo); }
+    .precio-val { font-weight: 700; color: var(--burnt); }
+    .stock-val { font-weight: 600; }
+    .stock-ok { color: #2D6644; }
+    .stock-low { color: #7A5800; }
+    .stock-out { color: #B91C1C; }
+    .chip { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .chip-yes { background: var(--lagoon-claro); color: #2D6644; }
+    .chip-no  { background: var(--rojo-claro);   color: #B91C1C; }
+    .acciones { display: flex; gap: 6px; }
+    .act-btn { width: 30px; height: 30px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: filter 0.18s; }
+    .act-btn:hover { filter: brightness(0.9); }
+    .act-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .act-btn.edit { background: var(--sea-claro); color: var(--sea); }
+    .act-btn.del  { background: var(--rojo-claro); color: #B91C1C; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--blanco); border-radius: 18px; padding: 28px; width: 100%; max-width: 560px; margin: 16px; max-height: 90vh; overflow-y: auto; animation: popIn 0.2s ease; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .modal h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .modal > p { font-size: 13px; color: var(--suave); margin-bottom: 20px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    .modal-grid .full { grid-column: 1 / -1; }
+    .mfield label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--suave); display: block; margin-bottom: 5px; }
+    .mfield input, .mfield textarea, .mfield select { width: 100%; background: var(--fondo); border: 1.5px solid var(--borde); border-radius: 10px; padding: 9px 13px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--texto); outline: none; transition: border-color 0.18s; resize: vertical; }
+    .mfield input:focus, .mfield textarea:focus, .mfield select:focus { border-color: var(--sea); background: var(--blanco); }
+    .modal-section { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--suave); margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1.5px solid var(--borde); grid-column: 1 / -1; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .confirm-modal { max-width: 380px; text-align: center; }
+    .confirm-icon { font-size: 40px; margin-bottom: 12px; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--texto); color: #fff; font-size: 13px; font-weight: 600; padding: 12px 20px; border-radius: 12px; z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .toast.ok svg { stroke: var(--lagoon); }
+    .toast.err svg { stroke: var(--rojo); }
+    .empty { text-align: center; padding: 52px 20px; color: var(--suave); }
+    .empty svg { width: 44px; height: 44px; stroke: #C8D8D4; fill: none; display: block; margin: 0 auto 10px; }
+    .empty p { font-size: 14px; }
+    @media (max-width: 900px) { body { grid-template-columns: 1fr; } .sidebar { display: none; } .main { padding: 24px 16px; } .perfil-fields, .modal-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1><span class="logo-dot"></span><%= vendedor.nombre_local %></h1>
+      <span>Panel de vendedor</span>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Menú</span>
+      <button class="nav-item active" onclick="showSection('perfil', this)">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Mi Perfil
+      </button>
+      <button class="nav-item" onclick="showSection('productos', this)">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Mis Productos
+      </button>
+    </div>
+    <div class="sidebar-bottom">
+      <a href="#" id="logoutBtn">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- PERFIL -->
+    <div class="section active" id="sec-perfil">
+      <div class="page-top">
+        <div><div class="page-title">Mi Perfil</div><div class="page-sub">Administra los datos de tu negocio</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--sea-claro);color:var(--sea);">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div><h3>Información del local</h3><p>Datos visibles para los usuarios de la plataforma</p></div>
+        </div>
+        <div class="card-body">
+          <div class="perfil-grid">
+            <div class="perfil-avatar"><%= vendedor.nombre_local ? vendedor.nombre_local.charAt(0).toUpperCase() : 'V' %></div>
+            <div class="perfil-info">
+              <h2><%= vendedor.nombre_local %></h2>
+              <p><%= vendedor.nombre %></p>
+              <div class="perfil-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Vendedor verificado
+              </div>
+            </div>
+          </div>
+          <form id="formPerfil">
+            <div class="perfil-fields">
+              <div class="pfield"><label>Nombre del local</label><input type="text" id="p-nombre-local" value="<%= vendedor.nombre_local || '' %>"></div>
+              <div class="pfield"><label>Nombre del vendedor</label><input type="text" id="p-nombre" value="<%= vendedor.nombre || '' %>"></div>
+              <div class="pfield"><label>Teléfono 1</label><input type="tel" id="p-telefono1" value="<%= vendedor.telefono_1 || '' %>"></div>
+              <div class="pfield"><label>Teléfono 2</label><input type="tel" id="p-telefono2" value="<%= vendedor.telefono_2 || '' %>"></div>
+              <div class="pfield full"><label>Dirección</label><input type="text" id="p-direccion" value="<%= vendedor.direccion || '' %>"></div>
+              <div class="pfield full"><label>Email del negocio</label><input type="email" id="p-email" value="<%= vendedor.email || '' %>"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1.5px solid var(--borde);">
+              <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--burnt-claro);color:var(--burnt);">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div><h3>Cambiar contraseña</h3><p>Actualiza tu contraseña de acceso</p></div>
+        </div>
+        <div class="card-body">
+          <form id="formPassword">
+            <div class="perfil-fields">
+              <div class="pfield"><label>Nueva contraseña</label><input type="password" id="p-newpass" placeholder="Mínimo 6 caracteres"></div>
+              <div class="pfield"><label>Confirmar contraseña</label><input type="password" id="p-confirmpass" placeholder="Repite la contraseña"></div>
+            </div>
+            <div style="margin-top:20px;padding-top:16px;border-top:1.5px solid var(--borde);">
+              <button type="submit" class="btn btn-warning">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Cambiar contraseña
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="section" id="sec-productos">
+      <div class="page-top">
+        <div>
+          <div class="page-title">Mis Productos</div>
+          <div class="page-sub"><%= productos.length %> productos registrados</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalCrear()">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+          Agregar producto
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Stock</th>
+                <th>Mín</th>
+                <th>Máx</th>
+                <th>Domicilio</th>
+                <th>Pago</th>
+                <th>Ingreso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaProductos">
+              <% if (productos.length > 0) { %>
+                <% productos.forEach(p => { %>
+                  <tr data-id="<%= p.id %>">
+                    <td>
+                      <div style="font-weight:600;"><%= p.name %></div>
+                      <% if (p.descripcion) { %>
+                        <div style="font-size:11px;color:var(--suave);margin-top:2px;"><%= p.descripcion %></div>
+                      <% } %>
+                      <% if (p.ubicacion_exacta) { %>
+                        <div style="font-size:11px;color:var(--suave);">📍 <%= p.ubicacion_exacta %></div>
+                      <% } %>
+                    </td>
+                    <td class="precio-val">$<%= p.precio ? Number(p.precio).toFixed(2) : '0.00' %></td>
+                    <td style="color:var(--suave);">
+                      <% if (p.descuento && p.descuento > 0) { %>
+                        <span style="color:var(--lagoon);font-weight:600;">-<%= p.descuento %>%</span>
+                      <% } else { %>
+                        —
+                      <% } %>
+                    </td>
+                    <td>
+                      <span class="stock-val <%= p.quantity <= 0 ? 'stock-out' : p.quantity <= p.min_stock ? 'stock-low' : 'stock-ok' %>">
+                        <%= p.quantity %>
+                      </span>
+                    </td>
+                    <td style="color:var(--suave);"><%= p.min_stock %></td>
+                    <td style="color:var(--suave);"><%= p.max_stock || '—' %></td>
+                    <td>
+                      <span class="chip <%= p.servicio_a_domicilio ? 'chip-yes' : 'chip-no' %>">
+                        <%= p.servicio_a_domicilio ? 'Sí' : 'No' %>
+                      </span>
+                    </td>
+                    <td style="color:var(--suave);font-size:12px;"><%= p.tipo_de_pago || '—' %></td>
+                    <td style="color:var(--suave);font-size:12px;"><%= p.ingreso_date || '—' %></td>
+                    <td>
+                      <div class="acciones">
+                        <button class="act-btn edit" title="Editar" onclick='abrirModalEditar(<%- JSON.stringify(p) %>)'>
+                          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="act-btn del" title="Eliminar" onclick="confirmarEliminar('<%= p.id %>', '<%= p.name %>')">
+                          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="10">
+                  <div class="empty">
+                    <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <p>No tienes productos aún. ¡Agrega tu primero!</p>
+                  </div>
+                </td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL CREAR/EDITAR PRODUCTO -->
+  <div class="modal-overlay" id="modalProducto">
+    <div class="modal">
+      <h3 id="modalTitle">Nuevo Producto</h3>
+      <p id="modalDesc">Completa los campos para agregar un producto</p>
+      <input type="hidden" id="m-id">
+      <div class="modal-grid">
+
+        <!-- INFO BÁSICA -->
+        <div class="modal-section">Información básica</div>
+        <div class="mfield full"><label>Nombre del producto</label><input type="text" id="m-nombre" placeholder="Ej. Orden de Tacos" required></div>
+        <div class="mfield full"><label>Descripción</label><textarea id="m-descripcion" placeholder="Descripción breve del producto" rows="2"></textarea></div>
+        <div class="mfield full"><label>Ubicación exacta</label><input type="text" id="m-ubicacion" placeholder="Ej. Local 12, Pasillo B"></div>
+
+        <!-- PRECIOS -->
+        <div class="modal-section">Precios</div>
+        <div class="mfield"><label>Precio ($)</label><input type="number" id="m-precio" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="mfield"><label>Descuento (%)</label><input type="number" id="m-descuento" placeholder="0" step="0.01" min="0" max="100"></div>
+
+        <!-- STOCK -->
+        <div class="modal-section">Inventario</div>
+        <div class="mfield"><label>Cantidad en stock</label><input type="number" id="m-cantidad" placeholder="0" min="0"></div>
+        <div class="mfield"><label>Stock mínimo</label><input type="number" id="m-min" placeholder="0" min="0"></div>
+        <div class="mfield"><label>Stock máximo</label><input type="number" id="m-max" placeholder="0" min="0"></div>
+        <div class="mfield"><label>Fecha de ingreso</label><input type="date" id="m-fecha"></div>
+
+        <!-- SERVICIO -->
+        <div class="modal-section">Servicio</div>
+        <div class="mfield">
+          <label>Servicio a domicilio</label>
+          <select id="m-domicilio">
+            <option value="false">No</option>
+            <option value="true">Sí</option>
+          </select>
+        </div>
+        <div class="mfield">
+          <label>Tipo de pago</label>
+          <select id="m-tipopago">
+            <option value="">Seleccionar</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <!-- CATEGORÍA -->
+        <div class="modal-section">Categoría</div>
+        <div class="mfield">
+          <label>Categoría</label>
+          <select id="m-categoria">
+            <option value="">Seleccionar categoría</option>
+            <option value="10">Alimentos y Bebidas</option>
+            <option value="11">Papelería y Oficina</option>
+            <option value="12">Salud y Belleza</option>
+            <option value="13">Ferretería y Construcción</option>
+            <option value="14">Panadería y Repostería</option>
+            <option value="15">Automotriz</option>
+            <option value="16">Mascotas</option>
+            <option value="17">Ropa y Accesorios</option>
+            <option value="18">Servicios y Otros</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalProducto')">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarProducto()">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAR ELIMINAR -->
+  <div class="modal-overlay" id="modalEliminar">
+    <div class="modal confirm-modal">
+      <div class="confirm-icon">🗑️</div>
+      <h3>¿Eliminar producto?</h3>
+      <p>Se eliminará <strong id="nombreEliminar"></strong> permanentemente.</p>
+      <div class="modal-actions" style="justify-content:center;">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalEliminar')">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfirmarEliminar">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg id="toastIcon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">Acción completada</span>
+  </div>
+
+  <script>
+    const VENDEDOR_ID = '<%= vendedor_id %>';
+
+    function showSection(key, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('sec-' + key).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function showToast(msg, type = 'ok') {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastIcon').innerHTML = type === 'ok'
+        ? '<polyline points="20 6 9 17 4 12"/>'
+        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+      t.className = 'toast ' + type + ' show';
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function abrirModalCrear() {
+      document.getElementById('modalTitle').textContent = 'Nuevo Producto';
+      document.getElementById('modalDesc').textContent  = 'Completa los campos para agregar un producto';
+      document.getElementById('m-id').value = '';
+      ['m-nombre','m-descripcion','m-ubicacion','m-precio','m-descuento',
+       'm-cantidad','m-min','m-max','m-categoria'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('m-fecha').value     = new Date().toISOString().split('T')[0];
+      document.getElementById('m-domicilio').value = 'false';
+      document.getElementById('m-tipopago').value  = '';
+      document.getElementById('modalProducto').classList.add('open');
+    }
+
+    function abrirModalEditar(p) {
+      document.getElementById('modalTitle').textContent  = 'Editar Producto';
+      document.getElementById('modalDesc').textContent   = 'Modifica los datos del producto';
+      document.getElementById('m-id').value              = p.id;
+      document.getElementById('m-nombre').value          = p.name || '';
+      document.getElementById('m-descripcion').value     = p.descripcion || '';
+      document.getElementById('m-ubicacion').value       = p.ubicacion_exacta || '';
+      document.getElementById('m-precio').value          = p.precio || '';
+      document.getElementById('m-descuento').value       = p.descuento || '';
+      document.getElementById('m-cantidad').value        = p.quantity || '';
+      document.getElementById('m-min').value             = p.min_stock || '';
+      document.getElementById('m-max').value             = p.max_stock || '';
+      document.getElementById('m-fecha').value           = p.ingreso_date || '';
+      document.getElementById('m-domicilio').value       = p.servicio_a_domicilio ? 'true' : 'false';
+      document.getElementById('m-tipopago').value        = p.tipo_de_pago || '';
+      document.getElementById('m-categoria').value = p.category_id ? String(p.category_id) : '';
+      document.getElementById('modalProducto').classList.add('open');
+    }
+
+    async function guardarProducto() {
+      const id   = document.getElementById('m-id').value;
+      const body = {
+        name:                 document.getElementById('m-nombre').value.trim(),
+        descripcion:          document.getElementById('m-descripcion').value.trim() || null,
+        ubicacion_exacta:     document.getElementById('m-ubicacion').value.trim() || null,
+        precio:               parseFloat(document.getElementById('m-precio').value) || 0,
+        descuento:            parseFloat(document.getElementById('m-descuento').value) || 0,
+        quantity:             parseInt(document.getElementById('m-cantidad').value) || 0,
+        min_stock:            parseInt(document.getElementById('m-min').value) || 0,
+        max_stock:            parseInt(document.getElementById('m-max').value) || 0,
+        ingreso_date:         document.getElementById('m-fecha').value || null,
+        servicio_a_domicilio: document.getElementById('m-domicilio').value === 'true',
+        tipo_de_pago:         document.getElementById('m-tipopago').value || null,
+        category_id:          parseInt(document.getElementById('m-categoria').value) || null,
+        vendedor_id:          VENDEDOR_ID
+      };
+
+      try {
+        const url    = id ? `/panel/productos/${id}` : '/panel/productos';
+        const method = id ? 'PUT' : 'POST';
+        const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const data   = await res.json();
+        if (res.ok) {
+          showToast(id ? 'Producto actualizado' : 'Producto creado');
+          cerrarModal('modalProducto');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(data.message || 'Error al guardar', 'err');
+        }
+      } catch { showToast('Error de conexión', 'err'); }
+    }
+
+    let idEliminar = null;
+    function confirmarEliminar(id, nombre) {
+      idEliminar = id;
+      document.getElementById('nombreEliminar').textContent = nombre;
+      document.getElementById('modalEliminar').classList.add('open');
+    }
+
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async () => {
+      if (!idEliminar) return;
+      try {
+        const res = await fetch(`/panel/productos/${idEliminar}`, { method: 'DELETE' });
+        if (res.ok) { showToast('Producto eliminado'); cerrarModal('modalEliminar'); setTimeout(() => location.reload(), 1000); }
+        else showToast('Error al eliminar', 'err');
+      } catch { showToast('Error de conexión', 'err'); }
+    });
+
+    document.getElementById('formPerfil').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        nombre_local: document.getElementById('p-nombre-local').value.trim(),
+        nombre:       document.getElementById('p-nombre').value.trim(),
+        telefono_1:   document.getElementById('p-telefono1').value.trim(),
+        telefono_2:   document.getElementById('p-telefono2').value.trim(),
+        direccion:    document.getElementById('p-direccion').value.trim(),
+        email:        document.getElementById('p-email').value.trim(),
+      };
+      try {
+        const res = await fetch('/panel/perfil', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (res.ok) showToast('Perfil actualizado correctamente');
+        else showToast('Error al actualizar perfil', 'err');
+      } catch { showToast('Error de conexión', 'err'); }
+    });
+
+    document.getElementById('formPassword').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newpass     = document.getElementById('p-newpass').value;
+      const confirmpass = document.getElementById('p-confirmpass').value;
+      if (newpass.length < 6) { showToast('Mínimo 6 caracteres', 'err'); return; }
+      if (newpass !== confirmpass) { showToast('Las contraseñas no coinciden', 'err'); return; }
+      try {
+        const res = await fetch('/panel/cambiar-password', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: newpass }) });
+        if (res.ok) { showToast('Contraseña actualizada'); document.getElementById('formPassword').reset(); }
+        else showToast('Error al cambiar contraseña', 'err');
+      } catch { showToast('Error de conexión', 'err'); }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/logout-vendedor', { method: 'POST' });
+      window.location.href = '/login-vendedor';
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajustes · Mi Ruta SJR</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="shortcut icon" href="/image/favicon.ico" />
+  <link rel="stylesheet" href="css/style_perfil_ajustes.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand me-2" href="#">
+        <img src="/image/logo_sin_fondo.png" alt="Logo" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contacto">Contacto</a></li>
+          <li class="nav-item"><a class="nav-link" href="#nosotros">Sobre Nosotros</a></li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <a class="btn-volver" href="/perfil">← Volver a perfil</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <div class="ajustes-wrapper">
+
+    <div class="ajustes-header">
+      <h1>
+        <span>Mi cuenta</span>
+        Ajustes
+      </h1>
+    </div>
+    <div class="ajustes-divider"></div>
+
+    <!-- ── APARIENCIA ── -->
+    <div class="ajustes-section" style="--accent-bar: #111;">
+
+      <div class="section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <h2>Apariencia</h2>
+      </div>
+
+      <!-- Tema -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Tema</span>
+          <span class="ajuste-desc">Cambia entre modo claro y oscuro</span>
+        </div>
+        <select class="select-control" id="tema-select">
+          <option value="light">☀️  Claro</option>
+          <option value="dark">🌙  Oscuro</option>
+          <option value="system">Sistema</option>
+        </select>
+      </div>
+
+      <!-- Color accent -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Color de acento</span>
+          <span class="ajuste-desc">Color principal de botones y detalles</span>
+        </div>
+        <div class="color-picker" id="color-picker">
+          <div class="color-dot selected" data-color="#FF5733" style="background:#FF5733;" title="Rojo"></div>
+          <div class="color-dot" data-color="#0057FF" style="background:#0057FF;" title="Azul"></div>
+          <div class="color-dot" data-color="#00B86B" style="background:#00B86B;" title="Verde"></div>
+          <div class="color-dot" data-color="#FF9500" style="background:#FF9500;" title="Naranja"></div>
+          <div class="color-dot" data-color="#8B5CF6" style="background:#8B5CF6;" title="Violeta"></div>
+          <div class="color-dot" data-color="#E91E8C" style="background:#E91E8C;" title="Magenta"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── PREFERENCIAS ── -->
+    <div class="ajustes-section" style="--accent-bar: #0057FF;">
+
+      <div class="section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <h2>Preferencias</h2>
+      </div>
+
+      <!-- Idioma -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Idioma</span>
+          <span class="ajuste-desc">Idioma de la interfaz</span>
+        </div>
+        <select class="select-control">
+          <option>🇲🇽  Español</option>
+          <option>🇺🇸  English</option>
+        </select>
+      </div>
+
+      <!-- Ruta favorita -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Ruta por defecto</span>
+          <span class="ajuste-desc">Se mostrará primero en tu inicio</span>
+        </div>
+        <select class="select-control">
+          <option value="">Sin preferencia</option>
+          <option value="7">Ruta 7 — La Mora</option>
+          <option value="2">Ruta 2 — Calle Galeana</option>
+          <option value="10">Ruta 10 — Cerro Gordo</option>
+          <option value="23">Ruta 23 — Pedregal</option>
+          <option value="4">Ruta 4 — Nuevo San Juan</option>
+          <option value="20">Ruta 20 — La Laguna</option>
+          <option value="16">Ruta 16 — La Laguna</option>
+          <option value="8">Ruta 8 — La Laguna</option>
+        </select>
+      </div>
+
+      <!-- Notificaciones -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Notificaciones</span>
+          <span class="ajuste-desc">Avisos sobre cambios en rutas</span>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Favoritos visibles -->
+      <div class="ajuste-row">
+        <div class="ajuste-info">
+          <span class="ajuste-label">Mostrar favoritas primero</span>
+          <span class="ajuste-desc">Tus rutas guardadas aparecen al inicio</span>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+    </div>
+
+    
+
+    <!-- ACCIONES -->
+    <button class="btn-guardar" id="btn-guardar">Guardar cambios</button>
+    <button class="btn-eliminar" id="btn-eliminar">Eliminar cuenta</button>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container text-center">
+      <p class="mb-1">© 2025 Mi Ruta SJR</p>
+      <a href="/terminos" class="text-decoration-none mx-2">Términos</a>
+      <a href="/privacidad" class="text-decoration-none mx-2">Privacidad</a>
+      <a href="/faq" class="text-decoration-none mx-2">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ── TEMA ──────────────────────────────
+    const temaSelect = document.getElementById('tema-select');
+    const saved = localStorage.getItem('sjr-tema') || 'light';
+    temaSelect.value = saved;
+    applyTema(saved);
+
+    temaSelect.addEventListener('change', () => {
+      const val = temaSelect.value;
+      applyTema(val);
+      localStorage.setItem('sjr-tema', val);
+    });
+
+    function applyTema(val) {
+      if (val === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else if (val === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+
+    // ── COLOR ACCENT ──────────────────────
+    const dots = document.querySelectorAll('.color-dot');
+    const savedColor = localStorage.getItem('sjr-accent') || '#FF5733';
+    setAccent(savedColor);
+
+    dots.forEach(dot => {
+      if (dot.dataset.color === savedColor) dot.classList.add('selected');
+      else dot.classList.remove('selected');
+
+      dot.addEventListener('click', () => {
+        dots.forEach(d => d.classList.remove('selected'));
+        dot.classList.add('selected');
+        setAccent(dot.dataset.color);
+        localStorage.setItem('sjr-accent', dot.dataset.color);
+      });
+    });
+
+    function setAccent(color) {
+      document.documentElement.style.setProperty('--accent', color);
+    }
+
+    // ── GUARDAR (feedback visual) ─────────
+    document.getElementById('btn-guardar').addEventListener('click', function() {
+      this.textContent = '✓ Guardado';
+      this.style.opacity = '0.7';
+      setTimeout(() => {
+        this.textContent = 'Guardar cambios';
+        this.style.opacity = '';
+      }, 2000);
+    });
+
+    // ── ELIMINAR ─────────────────────────
+    document.getElementById('btn-eliminar').addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+        // fetch('/eliminar-cuenta', { method: 'DELETE' })
+        alert('Cuenta eliminada (conectar con backend)');
+      }
+    });
+  </script>
+</body>
+</html>

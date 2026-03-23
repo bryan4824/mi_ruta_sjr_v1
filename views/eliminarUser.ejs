@@ -1,0 +1,15 @@
+<%- include("templates/navbar.ejs", {titulo: "Eliminar Contactos"})%>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card bg-warning rounded-4 border border-dark shadow p-4" style="max-width: 500px; width: 100%;">
+    <h5 class="fw-bold text-dark text-center mb-3">¿Estás seguro de eliminar <%= userPorId.nombre %>?</h5>
+    <p class="text-dark text-center">Esta acción no se puede deshacer.</p>
+    <hr>
+    <div class="d-flex justify-content-center gap-3">
+      <a class="btn btn-secondary" href="/showUser">Cancelar</a>
+      <a class="btn btn-danger" href="/eliminarConfirmado/<%= userPorId._id %>">Eliminar</a>
+    </div>
+  </div>
+</div>
+
+<%- include("templates/footer.ejs") %>
