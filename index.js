@@ -27,7 +27,7 @@ import User from "./models/modelUser.js"; // Ajusta la ruta según tu proyecto
 // -------------------------------
 //	Conexcion a Api de FastAPI
 // -------------------------------
-const API_BASE = 'http://localhost:8000/api/v1'; // 👈 base de tu FastAPI
+const API_BASE = 'https://ventasapiapp-production.up.railway.app/api/v1'; // base de tu FastAPI
 
 // -------------------------------
 // Middlewares y repositorios
@@ -390,6 +390,9 @@ app.get('/locales', async (req, res) => {
   try {
     const resVendedores = await fetch(`${API_BASE}/vendedores?limit=100&offset=0`);
     const dataVendedores = await resVendedores.json();
+
+    console.log('DATA VENDEDORES:', dataVendedores); // 👈
+
     res.render('locales', { vendedores: dataVendedores.items });
   } catch (error) {
     console.error('Error:', error);
