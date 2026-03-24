@@ -264,7 +264,8 @@ app.post('/register', async (req, res) => {
 			},
 		})
 
-		const verificationLink = `http://localhost:3000/verify?token=${verificationToken}`;
+		const verificationLink = `${process.env.APP_URL || 'http://localhost:3000'}/verify?token=${verificationToken}`;
+
 
 		const mailOptions = {
 			from: process.env.EMAIL_USER,
