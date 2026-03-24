@@ -1,15 +1,19 @@
-import multer from 'multer'
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
-export function subirArchivos(){
-    const storage = multer.diskStorage({
-        destination: './uploads', 
-        //cb=colback va hacer cuandos e termine la ejecucion de la funcion
-        filename: function(req, file, cb){
-            cb(null, Date.now() + file.originalname)
-        }
-    })//                           puedo subr mas de un archivo
-    // const upload = multer({storage}).array('foto',1)
-     const upload = multer({ storage }).single('foto');
-    return upload
+export function subirArchivos() {
+  const uploadDir = '/tmp/uploads';
+  
+  // Crear carpeta si no existe
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+  });
+
+  return multer({ storage }).single('photoPerfil');
 }
-
