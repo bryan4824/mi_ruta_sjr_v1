@@ -169,27 +169,45 @@
 
       <!-- IMAGEN -->
       <div class="img-panel">
-        <div class="img-badges">
-          <% if (producto.descuento && producto.descuento > 0) { %>
-            <span class="img-badge-chip chip-desc">-<%= producto.descuento %>% OFF</span>
-          <% } %>
-          <% if (producto.servicio_a_domicilio) { %>
-            <span class="img-badge-chip chip-dom">Envío gratis</span>
-          <% } %>
-          <% if (producto.quantity > producto.min_stock) { %>
-            <span class="img-badge-chip chip-stock">Disponible</span>
-          <% } else if (producto.quantity <= 0) { %>
-            <span class="img-badge-chip chip-out">Agotado</span>
-          <% } %>
-        </div>
-        <div class="img-box">
-          <% if (producto.image_url) { %>
-            <img src="<%= producto.image_url %>" alt="<%= producto.name %>">
-          <% } else { %>
-            <span class="img-letter"><%= (producto.name || 'P')[0].toUpperCase() %></span>
-          <% } %>
-        </div>
+  <div class="img-badges">
+    <% if (producto.descuento && producto.descuento > 0) { %>
+      <span class="img-badge-chip chip-desc">-<%= producto.descuento %>% OFF</span>
+    <% } %>
+    <% if (producto.servicio_a_domicilio) { %>
+      <span class="img-badge-chip chip-dom">Envío gratis</span>
+    <% } %>
+    <% if (producto.quantity > producto.min_stock) { %>
+      <span class="img-badge-chip chip-stock">Disponible</span>
+    <% } else if (producto.quantity <= 0) { %>
+      <span class="img-badge-chip chip-out">Agotado</span>
+    <% } %>
+  </div>
+
+  <div class="img-box">
+    <% if (producto && producto.imagenes && producto.imagenes.length > 0) { %>
+      <img src="<%= producto.imagenes[0] %>" 
+          alt="<%= producto.name %>" 
+          id="mainImage" 
+          style="width: 100%; height: 100%; object-fit: cover;">
+    <% } else { %>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <span class="img-letter"><%= (producto.name || 'P')[0].toUpperCase() %></span>
+        <p style="color:#999; font-size:12px;">Sin imagen</p>
       </div>
+    <% } %>
+  </div>
+
+  <% if (producto.imagenes && producto.imagenes.length > 1) { %>
+    <div style="display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px;">
+      <% producto.imagenes.forEach((url, index) => { %>
+        <div onclick="document.getElementById('mainImage').src='<%= url %>'" 
+             style="width: 50px; height: 50px; flex-shrink: 0; cursor: pointer; border: 1.5px solid var(--borde); border-radius: 4px; overflow: hidden; background: #fff;">
+          <img src="<%= url %>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
 
       <!-- INFO -->
       <div class="info-panel">

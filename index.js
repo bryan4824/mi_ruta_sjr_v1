@@ -387,20 +387,40 @@ app.post("/buscarContacto", async function (req, res) {
 // Mostrar los vendedores y sus productos
 
 // Vista principal: tablero de vendedores
+// app.get('/locales', async (req, res) => {
+//   try {
+//     const resVendedores = await fetch(`${API_BASE}/vendedores?limit=100&offset=0`);
+//     const dataVendedores = await resVendedores.json();
+
+//     console.log('DATA VENDEDORES:', dataVendedores); // 👈
+
+//     res.render('locales', { vendedores: dataVendedores.items });
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).send('Error al obtener vendedores');
+//   }
+// });
 app.get('/locales', async (req, res) => {
   try {
     const resVendedores = await fetch(`${API_BASE}/vendedores?limit=100&offset=0`);
     const dataVendedores = await resVendedores.json();
 
-    console.log('DATA VENDEDORES:', dataVendedores); // 👈
+    console.log('DATA VENDEDORES:', dataVendedores);
 
-    res.render('locales', { vendedores: dataVendedores.items });
+    // Validamos: si dataVendedores es un array, lo usamos. 
+    // Si es un objeto con .items, usamos eso. Si no, mandamos array vacío.
+    const listaFinal = Array.isArray(dataVendedores) 
+      ? dataVendedores 
+      : (dataVendedores.items || []);
+
+    res.render('locales', { vendedores: listaFinal });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('Error al obtener vendedores');
+    // IMPORTANTE: Incluso en el error, manda el objeto vendedores vacío 
+    // para que la vista no se rompa al cargar
+    res.render('locales', { vendedores: [] }); 
   }
 });
-
 // Vista de productos de un vendedor
 app.get('/locales/:id/productos', async (req, res) => {
   try {
@@ -417,6 +437,25 @@ app.get('/locales/:id/productos', async (req, res) => {
   }
 });
 
+// // Detalle de un producto
+// app.get('/locales/:vendedorId/productos/:productoId', async (req, res) => {
+//   try {
+//     const { vendedorId, productoId } = req.params;
+
+//     const [resProducto, resVendedor] = await Promise.all([
+//       fetch(`${API_BASE}/productos/${productoId}`),
+//       fetch(`${API_BASE}/vendedores/${vendedorId}`)
+//     ]);
+
+//     const producto = await resProducto.json();
+//     const vendedor = await resVendedor.json();
+
+//     res.render('producto-detalle', { producto, vendedor });
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).send('Error al obtener el producto');
+//   }
+// });
 // Detalle de un producto
 app.get('/locales/:vendedorId/productos/:productoId', async (req, res) => {
   try {
@@ -427,8 +466,13 @@ app.get('/locales/:vendedorId/productos/:productoId', async (req, res) => {
       fetch(`${API_BASE}/vendedores/${vendedorId}`)
     ]);
 
-    const producto = await resProducto.json();
+    const dataProducto = await resProducto.json(); // Esto trae { total, items }
     const vendedor = await resVendedor.json();
+
+    // EXTRAEMOS EL PRODUCTO REAL
+    // Si tu API devuelve un solo producto directo, usa dataProducto.
+    // Si devuelve el esquema que pusiste arriba, usa dataProducto.items[0]
+    const producto = dataProducto.items ? dataProducto.items[0] : dataProducto;
 
     res.render('producto-detalle', { producto, vendedor });
   } catch (error) {
@@ -436,7 +480,6 @@ app.get('/locales/:vendedorId/productos/:productoId', async (req, res) => {
     res.status(500).send('Error al obtener el producto');
   }
 });
-
 
 // login de vendedores
 // Middleware solo para admin

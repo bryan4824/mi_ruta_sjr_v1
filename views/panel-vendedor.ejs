@@ -6,8 +6,27 @@
   <title>Mi Panel · <%= vendedor.nombre_local %></title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="shortcut icon" href="/image/favicon.ico">
+
+  <!--
+    ═══════════════════════════════════════════════════════════════
+    📦 SDK DE CLOUDINARY — Upload Widget
+    ═══════════════════════════════════════════════════════════════
+    Este script carga el widget oficial de Cloudinary desde su CDN.
+    Expone el objeto global `cloudinary` que usaremos más abajo
+    para abrir el panel de carga de imágenes.
+    SIN este script, la función cloudinary.openUploadWidget() no existe.
+  -->
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+
   <style>
+    /* ── Reset universal ─────────────────────────────────────────
+       Elimina márgenes, rellenos y asegura que el padding no
+       desborde el ancho de los elementos (box-sizing: border-box). */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Variables de color del sistema de diseño ────────────────
+       Define una paleta centralizada reutilizable con CSS variables.
+       Cambiar un color aquí lo actualiza en todo el panel. */
     :root {
       --sea: #20948B; --sea-claro: #E6F5F4; --sea-borde: #A8D9D6;
       --burnt: #DE7A22; --burnt-claro: #FEF0E3; --burnt-borde: #F5C99A;
@@ -16,7 +35,15 @@
       --rojo: #E57373; --rojo-claro: #FEF2F2; --rojo-borde: #FCA5A5;
       --fondo: #F7F9F8; --blanco: #ffffff; --texto: #1E2A1E; --suave: #7A8C8A; --borde: #E4EDE8;
     }
+
+    /* ── Layout principal ────────────────────────────────────────
+       CSS Grid de 2 columnas: sidebar fijo de 240px + área principal
+       que ocupa el espacio restante. */
     body { font-family: 'Outfit', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; display: grid; grid-template-columns: 240px 1fr; }
+
+    /* ── Sidebar ─────────────────────────────────────────────────
+       Barra lateral fija (sticky + 100vh) con scroll propio si hay
+       muchos elementos de menú. */
     .sidebar { background: var(--texto); display: flex; flex-direction: column; padding: 28px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
     .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
     .sidebar-logo h1 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 3px; }
@@ -32,9 +59,16 @@
     .sidebar-bottom a { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.15s; }
     .sidebar-bottom a:hover { color: rgba(255,255,255,0.65); }
     .sidebar-bottom svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+    /* ── Área principal ──────────────────────────────────────────*/
     .main { padding: 32px 36px 64px; overflow-y: auto; }
+
+    /* ── Secciones (tabs) ────────────────────────────────────────
+       Por defecto todas están ocultas (display:none).
+       Solo la que tenga la clase .active se muestra. */
     .section { display: none; }
     .section.active { display: block; }
+
     .page-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
     .page-title { font-size: 22px; font-weight: 800; color: var(--texto); }
     .page-sub { font-size: 13px; color: var(--suave); margin-top: 2px; }
@@ -56,6 +90,8 @@
     .pfield input:focus { border-color: var(--sea); background: var(--blanco); }
     .pfield input::placeholder { color: var(--suave); }
     .pfield.full { grid-column: 1 / -1; }
+
+    /* ── Botones ─────────────────────────────────────────────────*/
     .btn { display: inline-flex; align-items: center; gap: 7px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer; transition: filter 0.18s, transform 0.15s; }
     .btn:hover { filter: brightness(0.92); }
     .btn:active { transform: scale(0.98); }
@@ -65,6 +101,8 @@
     .btn-danger { background: var(--rojo-claro); color: #B91C1C; border: 1.5px solid var(--rojo-borde); }
     .btn-warning { background: var(--burnt-claro); color: var(--burnt); border: 1.5px solid var(--burnt-borde); }
     .btn-success { background: var(--lagoon-claro); color: #2D6644; border: 1.5px solid var(--lagoon-borde); }
+
+    /* ── Tabla ───────────────────────────────────────────────────*/
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     thead tr { border-bottom: 1.5px solid var(--borde); }
@@ -86,9 +124,17 @@
     .act-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
     .act-btn.edit { background: var(--sea-claro); color: var(--sea); }
     .act-btn.del  { background: var(--rojo-claro); color: #B91C1C; }
+
+    /* ── Modales ─────────────────────────────────────────────────
+       El overlay cubre toda la pantalla con fondo semitransparente.
+       display:none por defecto → display:flex cuando tiene clase .open */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; display: none; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--blanco); border-radius: 18px; padding: 28px; width: 100%; max-width: 560px; margin: 16px; max-height: 90vh; overflow-y: auto; animation: popIn 0.2s ease; }
+
+    /* ── Caja del modal ──────────────────────────────────────────
+       max-height + overflow-y:auto permite scroll interno si el
+       contenido es más alto que el 90% de la pantalla. */
+    .modal { background: var(--blanco); border-radius: 18px; padding: 28px; width: 100%; max-width: 580px; margin: 16px; max-height: 90vh; overflow-y: auto; animation: popIn 0.2s ease; }
     @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     .modal h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
     .modal > p { font-size: 13px; color: var(--suave); margin-bottom: 20px; }
@@ -101,26 +147,155 @@
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
     .confirm-modal { max-width: 380px; text-align: center; }
     .confirm-icon { font-size: 40px; margin-bottom: 12px; }
+
+    /* ── Toast (notificación flotante) ───────────────────────────
+       Empieza desplazado 80px hacia abajo y sin opacidad.
+       La clase .show lo anima a su posición final. */
     .toast { position: fixed; bottom: 24px; right: 24px; background: var(--texto); color: #fff; font-size: 13px; font-weight: 600; padding: 12px 20px; border-radius: 12px; z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
     .toast.ok svg { stroke: var(--lagoon); }
     .toast.err svg { stroke: var(--rojo); }
+
+    /* ── Estado vacío ────────────────────────────────────────────*/
     .empty { text-align: center; padding: 52px 20px; color: var(--suave); }
     .empty svg { width: 44px; height: 44px; stroke: #C8D8D4; fill: none; display: block; margin: 0 auto 10px; }
     .empty p { font-size: 14px; }
-    @media (max-width: 900px) { body { grid-template-columns: 1fr; } .sidebar { display: none; } .main { padding: 24px 16px; } .perfil-fields, .modal-grid { grid-template-columns: 1fr; } }
+
+    /* ════════════════════════════════════════════════════════════
+       🖼️  ESTILOS DE LA ZONA DE IMÁGENES (nuevo bloque)
+       ════════════════════════════════════════════════════════════ */
+
+    /* Contenedor principal de la zona de imágenes:
+       ocupa las 2 columnas del modal-grid (full width) */
+    .img-zone { grid-column: 1 / -1; }
+
+    /* Botón de subir imágenes: ancho completo, borde punteado,
+       color suave para indicar zona interactiva */
+    .btn-upload {
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed var(--sea-borde);
+      border-radius: 12px;
+      background: var(--sea-claro);
+      color: var(--sea);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.18s, border-color 0.18s;
+    }
+    /* Hover: oscurece ligeramente para dar retroalimentación visual */
+    .btn-upload:hover { background: #D0EDEB; border-color: var(--sea); }
+    .btn-upload svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* Grid de previews: muestra miniaturas en rejilla de 4 columnas.
+       gap para separación entre imágenes. */
+    .img-previews {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      /* min-height reserva espacio visual aunque esté vacío */
+      min-height: 0;
+    }
+
+    /* Cada tarjeta de preview:
+       posición relative para colocar el botón × encima */
+    .img-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--borde);
+      aspect-ratio: 1;  /* fuerza que sea siempre cuadrada */
+      background: var(--fondo);
+    }
+
+    /* La imagen ocupa todo el espacio de su tarjeta
+       object-fit:cover recorta sin deformar */
+    .img-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Botón × para eliminar imagen:
+       posicionado en la esquina superior derecha de la tarjeta.
+       Empieza invisible y aparece al hacer hover en la tarjeta. */
+    .img-card .remove-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);  /* fondo oscuro semitransparente */
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      line-height: 1;
+      opacity: 0;           /* oculto por defecto */
+      transition: opacity 0.15s;
+    }
+    /* Mostrar botón × al pasar el mouse sobre la tarjeta */
+    .img-card:hover .remove-img { opacity: 1; }
+
+    /* Texto informativo debajo del botón de subir:
+       indica cuántas imágenes se han subido y el límite */
+    .img-count {
+      font-size: 11px;
+      color: var(--suave);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* ── Miniaturas en la tabla de productos ─────────────────────
+       Muestra thumbnails pequeños en la columna "Foto" de la tabla */
+    .thumb-list { display: flex; gap: 4px; flex-wrap: wrap; }
+    .thumb-list img {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid var(--borde);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────
+       En pantallas pequeñas el sidebar se oculta y la grid se
+       convierte en 1 columna */
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { padding: 24px 16px; }
+      .perfil-fields, .modal-grid { grid-template-columns: 1fr; }
+      /* En móvil las previews se muestran en 3 columnas */
+      .img-previews { grid-template-columns: repeat(3, 1fr); }
+    }
   </style>
 </head>
 <body>
 
+  <!-- ═══════════════════════════════════════════════════════════
+       SIDEBAR — Navegación lateral fija
+  ═══════════════════════════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-logo">
+      <!-- EJS: inserta el nombre del local del vendedor autenticado -->
       <h1><span class="logo-dot"></span><%= vendedor.nombre_local %></h1>
       <span>Panel de vendedor</span>
     </div>
     <div class="nav-section">
       <span class="nav-label">Menú</span>
+      <!-- onclick llama showSection() para cambiar la pestaña activa -->
       <button class="nav-item active" onclick="showSection('perfil', this)">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Mi Perfil
@@ -138,9 +313,12 @@
     </div>
   </aside>
 
+  <!-- ═══════════════════════════════════════════════════════════
+       ÁREA PRINCIPAL
+  ═══════════════════════════════════════════════════════════════ -->
   <main class="main">
 
-    <!-- PERFIL -->
+    <!-- ── SECCIÓN PERFIL ─────────────────────────────────────── -->
     <div class="section active" id="sec-perfil">
       <div class="page-top">
         <div><div class="page-title">Mi Perfil</div><div class="page-sub">Administra los datos de tu negocio</div></div>
@@ -155,6 +333,7 @@
         </div>
         <div class="card-body">
           <div class="perfil-grid">
+            <!-- EJS: toma la primera letra del nombre del local para el avatar -->
             <div class="perfil-avatar"><%= vendedor.nombre_local ? vendedor.nombre_local.charAt(0).toUpperCase() : 'V' %></div>
             <div class="perfil-info">
               <h2><%= vendedor.nombre_local %></h2>
@@ -208,13 +387,15 @@
       </div>
     </div>
 
-    <!-- PRODUCTOS -->
+    <!-- ── SECCIÓN PRODUCTOS ──────────────────────────────────── -->
     <div class="section" id="sec-productos">
       <div class="page-top">
         <div>
           <div class="page-title">Mis Productos</div>
+          <!-- EJS: muestra el total de productos del vendedor -->
           <div class="page-sub"><%= productos.length %> productos registrados</div>
         </div>
+        <!-- Al hacer clic abre el modal en modo "crear" -->
         <button class="btn btn-primary" onclick="abrirModalCrear()">
           <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
           Agregar producto
@@ -226,6 +407,8 @@
           <table>
             <thead>
               <tr>
+                <!-- Se agrega columna Foto para mostrar thumbnails -->
+                <th>Foto</th>
                 <th>Producto</th>
                 <th>Precio</th>
                 <th>Descuento</th>
@@ -242,6 +425,27 @@
               <% if (productos.length > 0) { %>
                 <% productos.forEach(p => { %>
                   <tr data-id="<%= p.id %>">
+
+                    <!-- ── Columna FOTO ────────────────────────────
+                         Si el producto tiene imágenes muestra las
+                         primeras 3 como thumbnails. Si no, un emoji. -->
+                    <td>
+                      <% if (p.imagenes && p.imagenes.length > 0) { %>
+                        <div class="thumb-list">
+                          <!-- Slice(0,3): muestra máximo 3 thumbnails para no
+                               sobrecargar visualmente la fila de la tabla -->
+                          <% p.imagenes.slice(0, 3).forEach(url => { %>
+                            <!-- src=url: carga la imagen directamente desde
+                                 Cloudinary sin pasar por el servidor -->
+                            <img src="<%= url %>" alt="foto">
+                          <% }) %>
+                        </div>
+                      <% } else { %>
+                        <!-- Emoji de cámara como placeholder cuando no hay foto -->
+                        <span style="font-size:20px;color:var(--suave);">📷</span>
+                      <% } %>
+                    </td>
+
                     <td>
                       <div style="font-weight:600;"><%= p.name %></div>
                       <% if (p.descripcion) { %>
@@ -275,6 +479,8 @@
                     <td style="color:var(--suave);font-size:12px;"><%= p.ingreso_date || '—' %></td>
                     <td>
                       <div class="acciones">
+                        <!-- <%- %> sin escapar para que JSON.stringify no rompa
+                             los atributos HTML con comillas escapadas -->
                         <button class="act-btn edit" title="Editar" onclick='abrirModalEditar(<%- JSON.stringify(p) %>)'>
                           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
@@ -286,7 +492,7 @@
                   </tr>
                 <% }) %>
               <% } else { %>
-                <tr><td colspan="10">
+                <tr><td colspan="11">
                   <div class="empty">
                     <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                     <p>No tienes productos aún. ¡Agrega tu primero!</p>
@@ -301,12 +507,18 @@
 
   </main>
 
-  <!-- MODAL CREAR/EDITAR PRODUCTO -->
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL CREAR / EDITAR PRODUCTO
+  ═══════════════════════════════════════════════════════════════ -->
   <div class="modal-overlay" id="modalProducto">
     <div class="modal">
+      <!-- El título cambia dinámicamente: "Nuevo Producto" o "Editar Producto" -->
       <h3 id="modalTitle">Nuevo Producto</h3>
       <p id="modalDesc">Completa los campos para agregar un producto</p>
+
+      <!-- Campo oculto: guarda el ID cuando editamos, vacío cuando creamos -->
       <input type="hidden" id="m-id">
+
       <div class="modal-grid">
 
         <!-- INFO BÁSICA -->
@@ -365,9 +577,44 @@
           </select>
         </div>
 
+        <!-- ══════════════════════════════════════════════════════
+             📸 SECCIÓN IMÁGENES (nueva sección del modal)
+        ════════════════════════════════════════════════════════ -->
+        <div class="modal-section">Imágenes del producto</div>
+
+        <!-- img-zone: contenedor full-width para el uploader y las previews -->
+        <div class="img-zone full">
+
+          <!-- Botón que abre el widget de Cloudinary al hacer clic.
+               No es un <input type="file"> — Cloudinary maneja todo eso. -->
+          <button type="button" class="btn-upload" onclick="abrirWidgetImagenes()">
+            <svg viewBox="0 0 24 24">
+              <!-- Icono de cámara SVG inline (no depende de librería externa) -->
+              <rect x="3" y="5" width="18" height="15" rx="2"/>
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M9 5l1.5-2h3L15 5"/>
+            </svg>
+            Subir imágenes desde tu dispositivo
+          </button>
+
+          <!-- Contador: muestra "X / 5 imágenes" en tiempo real.
+               Se actualiza con JavaScript cada vez que se sube o elimina una foto. -->
+          <div class="img-count" id="imgCount">0 / 5 imágenes</div>
+
+          <!-- Contenedor de las miniaturas de las imágenes subidas.
+               Empieza vacío. JavaScript agrega <div class="img-card"> aquí. -->
+          <div class="img-previews" id="imgPreviews"></div>
+
+        </div>
+        <!-- Fin de img-zone -->
+
       </div>
+      <!-- Fin de modal-grid -->
+
       <div class="modal-actions">
+        <!-- Cancelar: cierra el modal sin guardar nada -->
         <button class="btn btn-secondary" onclick="cerrarModal('modalProducto')">Cancelar</button>
+        <!-- Guardar: llama guardarProducto() que incluye las URLs de imágenes -->
         <button class="btn btn-primary" onclick="guardarProducto()">
           <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Guardar
@@ -376,7 +623,9 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIRMAR ELIMINAR -->
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL CONFIRMAR ELIMINAR
+  ═══════════════════════════════════════════════════════════════ -->
   <div class="modal-overlay" id="modalEliminar">
     <div class="modal confirm-modal">
       <div class="confirm-icon">🗑️</div>
@@ -389,49 +638,337 @@
     </div>
   </div>
 
+  <!-- Toast de notificaciones -->
   <div class="toast" id="toast">
     <svg id="toastIcon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toastMsg">Acción completada</span>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════════════ -->
   <script>
+    // ── Constante del vendedor ────────────────────────────────────
+    // EJS inyecta el UUID del vendedor autenticado en el JS.
+    // Se usa al construir el body de los requests POST/PUT.
     const VENDEDOR_ID = '<%= vendedor_id %>';
 
+    // ════════════════════════════════════════════════════════════
+    // 📸 LÓGICA DE IMÁGENES CON CLOUDINARY
+    // ════════════════════════════════════════════════════════════
+
+    // Array donde se acumulan las URLs de Cloudinary.
+    // Empieza vacío al abrir el modal.
+    // Al guardar, este array se envía como campo "imagenes" al backend.
+    let imagenesSubidas = [];
+
+    // MAX_IMAGENES: límite de fotos por producto.
+    // Se verifica antes de cada subida para no pasar el límite.
+    const MAX_IMAGENES = 5;
+
+    /**
+     * abrirWidgetImagenes()
+     * ─────────────────────
+     * Abre el widget oficial de Cloudinary.
+     * cloudinary.openUploadWidget() está disponible gracias al
+     * <script src="...all.js"> cargado en el <head>.
+     *
+     * Si ya se alcanzó el máximo de imágenes, muestra un toast
+     * y no abre el widget para evitar subidas innecesarias.
+     */
+    function abrirWidgetImagenes() {
+      // Bloquear si ya llegamos al límite
+      if (imagenesSubidas.length >= MAX_IMAGENES) {
+        showToast(`Máximo ${MAX_IMAGENES} imágenes por producto`, 'err');
+        return;
+      }
+
+      // Configuración del widget de Cloudinary
+      cloudinary.openUploadWidget({
+        // ⚠️ REEMPLAZA con tu Cloud Name real de cloudinary.com
+        cloudName: 'dwzbis1cy',
+
+        // ⚠️ REEMPLAZA con tu Upload Preset (debe ser "unsigned")
+        // Se crea en: Cloudinary Dashboard → Settings → Upload → Upload presets
+        uploadPreset: 'ml_images',
+
+        // Fuentes permitidas: galería del dispositivo y cámara
+        sources: ['local', 'camera'],
+
+        // Permite seleccionar varias fotos a la vez
+        multiple: true,
+
+        // Cuántas fotos más puede subir en esta apertura del widget
+        // (MAX_IMAGENES menos las que ya están subidas)
+        maxFiles: MAX_IMAGENES - imagenesSubidas.length,
+
+        // Idioma del widget
+        language: 'es',
+
+        // Carpeta donde se guardarán en Cloudinary (opcional pero ordenado)
+        folder: 'productos',
+
+        // Recorte automático a cuadrado para uniformidad en la galería
+        cropping: false,
+
+        // Tamaño máximo de archivo: 5 MB (en bytes)
+        maxFileSize: 5000000,
+
+      }, (error, result) => {
+        // El callback se llama MÚLTIPLES VECES durante la sesión del widget:
+        // por cada evento (queued, uploading, success, etc.)
+
+        if (error) {
+          // Si hubo un error en la subida, mostrar notificación
+          showToast('Error al subir imagen', 'err');
+          console.error('Cloudinary error:', error);
+          return;
+        }
+
+        // Solo nos interesa el evento "success":
+        // significa que UNA imagen terminó de subirse correctamente
+        if (result.event === 'success') {
+          // result.info.secure_url → URL pública HTTPS de la imagen en Cloudinary
+          // Esta URL es permanente y se puede usar directamente en <img src="">
+          const url = result.info.secure_url;
+
+          // Agregar la URL al array local
+          imagenesSubidas.push(url);
+
+          // Renderizar la miniatura en el modal
+          agregarPreviewImagen(url, imagenesSubidas.length - 1);
+
+          // Actualizar el contador "X / 5 imágenes"
+          actualizarContadorImagenes();
+        }
+      });
+    }
+
+    /**
+     * agregarPreviewImagen(url, index)
+     * ──────────────────────────────────
+     * Crea una tarjeta de miniatura (img-card) con la imagen y un
+     * botón × para eliminarla, y la inserta en el contenedor de previews.
+     *
+     * @param {string} url   - URL de Cloudinary de la imagen
+     * @param {number} index - Posición en el array imagenesSubidas
+     */
+    function agregarPreviewImagen(url, index) {
+      // Referencia al contenedor de previews en el DOM
+      const contenedor = document.getElementById('imgPreviews');
+
+      // Crear la tarjeta contenedora
+      const card = document.createElement('div');
+      card.className = 'img-card';
+      // data-index guarda la posición para poder eliminarla del array
+      card.dataset.index = index;
+
+      // La imagen: src apunta directamente a Cloudinary
+      // No pasa por el servidor → carga rápida desde el CDN de Cloudinary
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Imagen del producto';
+
+      // Botón × para eliminar esta imagen de la lista
+      const btnRemove = document.createElement('button');
+      btnRemove.className = 'remove-img';
+      btnRemove.type = 'button';       // evita que sea tratado como submit
+      btnRemove.textContent = '×';
+      btnRemove.title = 'Eliminar imagen';
+
+      // Al hacer clic en ×: eliminar del array y re-renderizar todas las previews
+      btnRemove.addEventListener('click', () => {
+        // Encontrar la posición actual de esta URL en el array
+        // (usamos la URL en lugar del index original porque el index
+        // puede cambiar al eliminar otros elementos)
+        const idx = imagenesSubidas.indexOf(url);
+        if (idx !== -1) {
+          // splice(idx, 1): elimina 1 elemento en la posición idx
+          imagenesSubidas.splice(idx, 1);
+        }
+        // Re-renderizar todas las previews con los índices actualizados
+        renderizarPreviews();
+        // Actualizar el contador
+        actualizarContadorImagenes();
+      });
+
+      // Ensamblar la tarjeta: imagen + botón × adentro
+      card.appendChild(img);
+      card.appendChild(btnRemove);
+
+      // Insertar la tarjeta en el DOM
+      contenedor.appendChild(card);
+    }
+
+    /**
+     * renderizarPreviews()
+     * ─────────────────────
+     * Limpia el contenedor de previews y vuelve a dibujarlo
+     * desde cero usando el array imagenesSubidas actual.
+     * Se llama después de eliminar una imagen para que los
+     * índices queden correctos.
+     */
+    function renderizarPreviews() {
+      // Vaciar el contenedor completamente
+      const contenedor = document.getElementById('imgPreviews');
+      contenedor.innerHTML = '';
+
+      // Recrear una tarjeta por cada URL en el array
+      imagenesSubidas.forEach((url, index) => {
+        agregarPreviewImagen(url, index);
+      });
+    }
+
+    /**
+     * actualizarContadorImagenes()
+     * ─────────────────────────────
+     * Actualiza el texto "X / 5 imágenes" debajo del botón de subir.
+     */
+    function actualizarContadorImagenes() {
+      document.getElementById('imgCount').textContent =
+        `${imagenesSubidas.length} / ${MAX_IMAGENES} imágenes`;
+    }
+
+    /**
+     * resetImagenes()
+     * ────────────────
+     * Limpia el estado de imágenes.
+     * Se llama al abrir el modal en modo crear (campo vacío)
+     * o al cerrar el modal para no dejar URLs residuales.
+     */
+    function resetImagenes() {
+      imagenesSubidas = [];                                  // vaciar array
+      document.getElementById('imgPreviews').innerHTML = ''; // limpiar previews del DOM
+      actualizarContadorImagenes();                          // actualizar contador a "0 / 5"
+    }
+
+    /**
+     * cargarImagenesExistentes(urls)
+     * ───────────────────────────────
+     * Carga las imágenes existentes de un producto al abrir el modal en modo editar.
+     * Las URLs ya están en Supabase → solo las mostramos en las previews.
+     *
+     * @param {string[]} urls - Array de URLs de Cloudinary guardadas en la BD
+     */
+    function cargarImagenesExistentes(urls) {
+      resetImagenes();   // limpiar estado anterior primero
+      if (!urls || !Array.isArray(urls)) return; // guard: si no hay imágenes, salir
+
+      // Cargar cada URL en el array y mostrar su preview
+      urls.forEach((url, index) => {
+        imagenesSubidas.push(url);                 // agregar al array local
+        agregarPreviewImagen(url, index);          // mostrar miniatura
+      });
+      actualizarContadorImagenes();                // actualizar contador
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // 🧭 NAVEGACIÓN ENTRE SECCIONES
+    // ════════════════════════════════════════════════════════════
+
+    /**
+     * showSection(key, btn)
+     * ─────────────────────
+     * Muestra la sección correspondiente al botón clickeado
+     * y oculta todas las demás.
+     *
+     * @param {string} key - Sufijo del id de la sección (ej. 'perfil', 'productos')
+     * @param {Element} btn - El botón del sidebar que fue clickeado
+     */
     function showSection(key, btn) {
+      // Quitar clase 'active' de todas las secciones y botones
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      // Activar solo la sección y botón correspondientes
       document.getElementById('sec-' + key).classList.add('active');
       if (btn) btn.classList.add('active');
     }
 
+    // ════════════════════════════════════════════════════════════
+    // 🔔 TOAST (notificaciones temporales)
+    // ════════════════════════════════════════════════════════════
+
+    /**
+     * showToast(msg, type)
+     * ─────────────────────
+     * Muestra una notificación flotante en la esquina inferior derecha.
+     * Desaparece automáticamente después de 3.5 segundos.
+     *
+     * @param {string} msg  - Texto a mostrar
+     * @param {string} type - 'ok' (verde) o 'err' (rojo)
+     */
     function showToast(msg, type = 'ok') {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;
+      // Cambiar el ícono SVG según el tipo
       document.getElementById('toastIcon').innerHTML = type === 'ok'
-        ? '<polyline points="20 6 9 17 4 12"/>'
-        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+        ? '<polyline points="20 6 9 17 4 12"/>'       // ✓ check
+        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'; // ⚠ warning
       t.className = 'toast ' + type + ' show';
+      // Después de 3.5s quitar la clase .show para ocultarlo con la animación CSS
       setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+    // ════════════════════════════════════════════════════════════
+    // 📦 MODALES DE PRODUCTO
+    // ════════════════════════════════════════════════════════════
 
+    /**
+     * cerrarModal(id)
+     * ────────────────
+     * Quita la clase .open del overlay, ocultando el modal.
+     */
+    function cerrarModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    /**
+     * abrirModalCrear()
+     * ──────────────────
+     * Abre el modal en modo "nuevo producto":
+     * - Limpia todos los campos de texto/número
+     * - Resetea las imágenes (array vacío, previews limpias)
+     * - Pone la fecha de hoy por defecto
+     */
     function abrirModalCrear() {
       document.getElementById('modalTitle').textContent = 'Nuevo Producto';
       document.getElementById('modalDesc').textContent  = 'Completa los campos para agregar un producto';
-      document.getElementById('m-id').value = '';
+      document.getElementById('m-id').value = '';   // sin ID = modo crear
+
+      // Limpiar todos los campos de texto del modal
       ['m-nombre','m-descripcion','m-ubicacion','m-precio','m-descuento',
-       'm-cantidad','m-min','m-max','m-categoria'].forEach(id => document.getElementById(id).value = '');
+       'm-cantidad','m-min','m-max','m-categoria'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+
+      // Fecha de hoy por defecto
       document.getElementById('m-fecha').value     = new Date().toISOString().split('T')[0];
       document.getElementById('m-domicilio').value = 'false';
       document.getElementById('m-tipopago').value  = '';
+
+      // Limpiar imágenes (el vendedor partirá de cero)
+      resetImagenes();
+
+      // Mostrar el modal
       document.getElementById('modalProducto').classList.add('open');
     }
 
+    /**
+     * abrirModalEditar(p)
+     * ────────────────────
+     * Abre el modal pre-llenado con los datos del producto p.
+     * También carga las imágenes ya guardadas en Supabase.
+     *
+     * @param {Object} p - Objeto producto completo (incluye p.imagenes)
+     */
     function abrirModalEditar(p) {
       document.getElementById('modalTitle').textContent  = 'Editar Producto';
       document.getElementById('modalDesc').textContent   = 'Modifica los datos del producto';
+
+      // m-id guardará el UUID → guardarProducto() detecta modo editar
       document.getElementById('m-id').value              = p.id;
+
+      // Rellenar campos con valores actuales del producto
       document.getElementById('m-nombre').value          = p.name || '';
       document.getElementById('m-descripcion').value     = p.descripcion || '';
       document.getElementById('m-ubicacion').value       = p.ubicacion_exacta || '';
@@ -443,12 +980,28 @@
       document.getElementById('m-fecha').value           = p.ingreso_date || '';
       document.getElementById('m-domicilio').value       = p.servicio_a_domicilio ? 'true' : 'false';
       document.getElementById('m-tipopago').value        = p.tipo_de_pago || '';
-      document.getElementById('m-categoria').value = p.category_id ? String(p.category_id) : '';
+      document.getElementById('m-categoria').value       = p.category_id ? String(p.category_id) : '';
+
+      // Cargar las imágenes existentes del producto en el uploader
+      // p.imagenes puede ser null si el producto no tiene fotos aún
+      cargarImagenesExistentes(p.imagenes);
+
+      // Mostrar el modal
       document.getElementById('modalProducto').classList.add('open');
     }
 
+    /**
+     * guardarProducto()
+     * ──────────────────
+     * Lee todos los campos del modal y envía un POST o PUT al backend.
+     * El campo "imagenes" incluye el array de URLs de Cloudinary.
+     *
+     * - Si m-id tiene valor → PUT /{id}  (actualizar)
+     * - Si m-id está vacío  → POST /     (crear)
+     */
     async function guardarProducto() {
-      const id   = document.getElementById('m-id').value;
+      const id = document.getElementById('m-id').value;
+
       const body = {
         name:                 document.getElementById('m-nombre').value.trim(),
         descripcion:          document.getElementById('m-descripcion').value.trim() || null,
@@ -462,42 +1015,84 @@
         servicio_a_domicilio: document.getElementById('m-domicilio').value === 'true',
         tipo_de_pago:         document.getElementById('m-tipopago').value || null,
         category_id:          parseInt(document.getElementById('m-categoria').value) || null,
-        vendedor_id:          VENDEDOR_ID
+        vendedor_id:          VENDEDOR_ID,
+
+        // ✅ IMÁGENES: se envían las URLs acumuladas en imagenesSubidas.
+        // Si no se subió ninguna foto el array estará vacío ([]).
+        // FastAPI recibe esto como List[str] en el modelo ProductCreate/ProductUpdate.
+        imagenes: imagenesSubidas.length > 0 ? imagenesSubidas : null
       };
 
       try {
+        // Decidir URL y método según si es creación o edición
         const url    = id ? `/panel/productos/${id}` : '/panel/productos';
         const method = id ? 'PUT' : 'POST';
-        const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const data   = await res.json();
+
+        const res  = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)   // serializar body a JSON
+        });
+
+        const data = await res.json();
+
         if (res.ok) {
           showToast(id ? 'Producto actualizado' : 'Producto creado');
           cerrarModal('modalProducto');
+          // Recargar la página para reflejar los cambios en la tabla
           setTimeout(() => location.reload(), 1000);
         } else {
+          // El backend devolvió un error (400, 404, 500, etc.)
           showToast(data.message || 'Error al guardar', 'err');
         }
-      } catch { showToast('Error de conexión', 'err'); }
+      } catch {
+        // Error de red (sin conexión, backend caído, etc.)
+        showToast('Error de conexión', 'err');
+      }
     }
 
+    // ════════════════════════════════════════════════════════════
+    // 🗑️ ELIMINAR PRODUCTO
+    // ════════════════════════════════════════════════════════════
+
+    // Variable para recordar qué producto se va a eliminar
+    // mientras el modal de confirmación está abierto
     let idEliminar = null;
+
+    /**
+     * confirmarEliminar(id, nombre)
+     * ──────────────────────────────
+     * Abre el modal de confirmación con el nombre del producto.
+     */
     function confirmarEliminar(id, nombre) {
-      idEliminar = id;
+      idEliminar = id;   // guardar para usarlo en el click de confirmar
       document.getElementById('nombreEliminar').textContent = nombre;
       document.getElementById('modalEliminar').classList.add('open');
     }
 
+    // Al confirmar la eliminación: llamar al endpoint DELETE
     document.getElementById('btnConfirmarEliminar').addEventListener('click', async () => {
       if (!idEliminar) return;
       try {
         const res = await fetch(`/panel/productos/${idEliminar}`, { method: 'DELETE' });
-        if (res.ok) { showToast('Producto eliminado'); cerrarModal('modalEliminar'); setTimeout(() => location.reload(), 1000); }
-        else showToast('Error al eliminar', 'err');
-      } catch { showToast('Error de conexión', 'err'); }
+        if (res.ok) {
+          showToast('Producto eliminado');
+          cerrarModal('modalEliminar');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast('Error al eliminar', 'err');
+        }
+      } catch {
+        showToast('Error de conexión', 'err');
+      }
     });
 
+    // ════════════════════════════════════════════════════════════
+    // 👤 PERFIL
+    // ════════════════════════════════════════════════════════════
+
     document.getElementById('formPerfil').addEventListener('submit', async (e) => {
-      e.preventDefault();
+      e.preventDefault();   // evitar recarga de página por submit nativo
       const body = {
         nombre_local: document.getElementById('p-nombre-local').value.trim(),
         nombre:       document.getElementById('p-nombre').value.trim(),
@@ -507,30 +1102,56 @@
         email:        document.getElementById('p-email').value.trim(),
       };
       try {
-        const res = await fetch('/panel/perfil', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const res = await fetch('/panel/perfil', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
         if (res.ok) showToast('Perfil actualizado correctamente');
         else showToast('Error al actualizar perfil', 'err');
       } catch { showToast('Error de conexión', 'err'); }
     });
 
+    // ════════════════════════════════════════════════════════════
+    // 🔐 CAMBIAR CONTRASEÑA
+    // ════════════════════════════════════════════════════════════
+
     document.getElementById('formPassword').addEventListener('submit', async (e) => {
       e.preventDefault();
       const newpass     = document.getElementById('p-newpass').value;
       const confirmpass = document.getElementById('p-confirmpass').value;
+
+      // Validaciones del lado del cliente (antes de enviar al server)
       if (newpass.length < 6) { showToast('Mínimo 6 caracteres', 'err'); return; }
       if (newpass !== confirmpass) { showToast('Las contraseñas no coinciden', 'err'); return; }
+
       try {
-        const res = await fetch('/panel/cambiar-password', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: newpass }) });
-        if (res.ok) { showToast('Contraseña actualizada'); document.getElementById('formPassword').reset(); }
-        else showToast('Error al cambiar contraseña', 'err');
+        const res = await fetch('/panel/cambiar-password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: newpass })
+        });
+        if (res.ok) {
+          showToast('Contraseña actualizada');
+          document.getElementById('formPassword').reset();   // limpiar campos
+        } else {
+          showToast('Error al cambiar contraseña', 'err');
+        }
       } catch { showToast('Error de conexión', 'err'); }
     });
 
+    // ════════════════════════════════════════════════════════════
+    // 🚪 CERRAR SESIÓN
+    // ════════════════════════════════════════════════════════════
+
     document.getElementById('logoutBtn').addEventListener('click', async (e) => {
       e.preventDefault();
+      // Invalidar la sesión en el servidor
       await fetch('/logout-vendedor', { method: 'POST' });
+      // Redirigir al login
       window.location.href = '/login-vendedor';
     });
+
   </script>
 
 </body>
